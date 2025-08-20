@@ -1,0 +1,20 @@
+nav:
+  toc: Table of Contents
+  next_post: Newer post →
+  previous_post: ← Older post
+  continue_reading: Continue reading →
+  archive_title: Archive
+  archive: Search <a href="/archive/">the&nbsp;archive</a>
+  archive_search: Search
+  back: ← Back
+  page: Page
+  next: Next →
+  previous: ← Previous
+post:
+  by: by
+  reading_time: min read
+search:
+  by_author: Posts by
+  by_tag: Tagged
+  tags: Tags
+  authors: Authors
