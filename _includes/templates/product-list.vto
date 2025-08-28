@@ -1,0 +1,10 @@
+<ul class="product-list grid grid-cols-3 gap-6">
+  {{ for product of productslist }}
+    <li>
+      <a href="{{ product.url }}{{ product.name |> slugify }}/">
+        <img src="{{ product.thumbnail_url }}" alt="{{ product.name }}">
+        <h2>{{ product.name }}</h2>
+      </a>
+    </li>
+  {{ /for }}
+</ul>

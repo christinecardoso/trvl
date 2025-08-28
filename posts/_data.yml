@@ -1,6 +1,7 @@
 type: post
 layout: layouts/post.vto
 basename: /
+templateEngine: [vto, md]
 
 metas:
   title: "=title"

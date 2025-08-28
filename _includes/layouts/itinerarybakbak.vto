@@ -1,0 +1,44 @@
+---
+layout: layouts/base.vto
+bodyClass: body-post
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header">
+    <h1 class="page-title">{{ title }}</h1>
+  </header>
+  <section class="itinerary-main"> 
+
+    {{ set slug = title |> slugify }}
+
+    <!-- /* Normalize start_date to a pure UTC date (no TZ shifts) */ -->
+    {{ set hasStart = !!start_date }}
+    {{ set baseY = hasStart ? start_date.getUTCFullYear() : null }}
+    {{ set baseM = hasStart ? start_date.getUTCMonth() : null }}
+    {{ set baseD = hasStart ? start_date.getUTCDate() : null }}
+
+    <ol class="grid grid-cols-2 gap-6">
+      {{ for day of search.pages(`itinerary_slug=${slug}`, "itinerary_day") }}
+        {{ set dayIndex = (Number(day.itinerary_day) || 1) - 1 }}
+
+        <!-- {# Build the date in UTC so "8/27/2025" stays 8/27 regardless of viewer's timezone #} -->
+        {{ set thisDate = hasStart ? new Date(Date.UTC(baseY, baseM, baseD + dayIndex)) : null }}
+        {{ set niceDate = thisDate ? thisDate.toLocaleDateString("en-US", {
+          timeZone: "UTC", weekday: "short", month: "short", day: "numeric"
+        }) : "" }}
+
+        <li>
+          <h2 class="text-2xl font-sans">
+            Day {{ day.itinerary_day }}{{ if niceDate }} · {{ niceDate }}{{ /if }}
+          </h2>
+          <h3 class="text-3xl"><a href="{{ day.url }}">{{ day.title }}</a></h3>
+
+          {{ set raw = day.content || "" }}
+          {{ set parts = raw.split("## Schedule") }}
+          {{ set scheduleMd = parts.length > 1 ? parts[1] : "" }}
+          {{ scheduleMd |> md }}
+        </li>
+      {{ /for }}
+    </ol>
+  </section>
+</main>

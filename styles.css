@@ -3,12 +3,14 @@
  * https://github.com/lumeland/ds
  */
 @import "css/ds.css";
+@import "tailwindcss";
 
 /* Custom components */
 @import "css/navbar.css";
 @import "css/page.css";
 @import "css/post-list.css";
 @import "css/post.css";
+@import "css/archive.css";
 
 /* google-fonts */
 
@@ -104,9 +106,12 @@ p {
 
 /* Page layout */
 main {
-  padding: var(--row-gap-xsmall) 0 var(--row-gap-medium);
-  max-width: min(100% - 15vw, 45em);
+  @apply md:max-w-6xl lg:max-w-full;
+  /*padding: var(--row-gap-xsmall) 0 var(--row-gap-medium);*/
+  /*max-width: min(100% - 15vw, 45em);*/
   margin: 0 auto;
+
+  padding: 2rem min(5vw, 5rem);
 
   & > :first-child {
     margin-top: 0;

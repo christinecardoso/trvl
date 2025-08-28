@@ -1,5 +1,5 @@
 ---
-title: How to install Xeo
+title: instructions
 date: '2025-01-13T16:00:00.000Z'
 author: Ricky de Laveaga
 tags:

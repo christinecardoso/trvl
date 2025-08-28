@@ -1,0 +1,25 @@
+[
+  {
+    "id": 390328697,
+    "name": "Dad Hat",
+    "thumbnail_url": "https://files.cdn.printful.com/files/248/248926f7412da9b523d026785749902a_preview.png",
+    "variants": [
+      {
+        "id": 4934183342,
+        "name": "Dad Hat / Light Blue",
+        "retail_price": "20.00",
+        "image": "https://files.cdn.printful.com/products/206/7856_1584455357.jpg",
+        "color": "Light Blue",
+        "size": "One size"
+      },
+      {
+        "id": 4934183343,
+        "name": "Dad Hat / White",
+        "retail_price": "20.00",
+        "image": "https://files.cdn.printful.com/products/206/7853_1584455533.jpg",
+        "color": "White",
+        "size": "One size"
+      }
+    ]
+  }
+]

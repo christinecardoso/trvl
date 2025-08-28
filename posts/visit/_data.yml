@@ -1,0 +1,7 @@
+type: post
+layout: layouts/destination.vto
+basename: /
+templateEngine: [vto, md]
+
+metas:
+  title: "=title"

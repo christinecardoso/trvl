@@ -1,0 +1,5 @@
+main.body-tag .archive-main {
+	> .postList {
+		@apply w-full col-span-full grid grid-cols-3 gap-5;
+	}
+}

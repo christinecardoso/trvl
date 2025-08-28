@@ -1,0 +1,150 @@
+---
+layout: layouts/base.vto
+bodyClass: body-post
+---
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<script type="module" src="/js/maps.js"></script>
+
+<main class="{{ it.bodyClass }}">
+  <article class="post" data-pagefind-body data-title="{{ title }}" data-pagefind-index-attrs="data-title">
+    <header class="post-header">
+      <h1 class="post-title">{{ title }}</h1>
+
+      {{ include "templates/post-details.vto" }}
+      <p>Region: {{ region }} | Country: {{ country }}</p>
+
+      <h2>Things to Do</h2>
+      {{ if activities }}
+        <ul>
+          {{ for act of activities }}
+            <li><a href="{{ act.url }}">{{ act.title }}</a></li>
+          {{ /for }}
+        </ul>
+      {{ else }}
+        <p>No activities found for this destination.</p>
+      {{ /if }}
+
+
+<h2>Day Trips</h2>
+<ul>
+  {{ for dest of travelCategories }}
+      <li><a href="{{ dest.url }}">{{ dest.title }}</a></li>
+  {{ /for }}
+</ul>
+
+
+
+
+      <h2>Posts & Itineraries</h2>
+      <ul>
+        {{ for post of posts }}
+          <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+        {{ /for }}
+      </ul>
+
+      <h2>Instagram Spots</h2>
+      <ul>
+        {{ for gal of galleries }}
+          <li><a href="{{ gal.url }}">{{ gal.title }}</a></li>
+        {{ /for }}
+      </ul>
+
+    </header>
+
+
+    {{ if toc.length }}
+    <nav class="toc">
+      <h2>{{ i18n.nav.toc }}</h2>
+      <ol>
+        {{ for item of toc }}
+        <li>
+          <a href="#{{ item.slug }}">{{ item.text }}</a>
+
+          {{ if item.children.length }}
+          <ul>
+            {{ for child of item.children }}
+            <li>
+              <a href="#{{ child.slug }}">{{ child.text }}</a>
+            </li>
+            {{ /for }}
+          </ul>
+          {{ /if }}
+        </li>
+        {{ /for }}
+      </ol>
+    </nav>
+    {{ /if }}
+
+    <div class="post-body body">
+      {{ content }}
+    </div>
+
+<h2>Map of Quito & Nearby</h2>
+<div id="map" class="h-96 rounded shadow"></div>
+<script>
+  window.places = [
+    // Destination itself
+    {{ if lat && lng }}
+    {
+      title: "{{ title }}",
+      url: "{{ url }}",
+      lat: {{ lat }},
+      lng: {{ lng }},
+      category: "destination",
+    },
+    {{ /if }}
+
+    // Related places
+    {{ for place of related }}
+      {{ if place.lat && place.lng }}
+      {
+        title: "{{ place.title }}",
+        url: "{{ place.url }}",
+        lat: {{ place.lat }},
+        lng: {{ place.lng }},
+        category: "{{ place.travel_category || 'activity' }}",
+      },
+      {{ /if }}
+    {{ /for }}
+  ];
+</script>
+
+    {{ if it.footnotes.length }}
+    <aside role="note" class="footnotes">
+      <dl>
+        {{ for note of footnotes }}
+        <div id={{ note.id }} class="footnote">
+          <dt><a href="#{{ note.refId }}">{{ note.label }}</a></dt>
+          <dd>{{ note.content }}</dd>
+        </div>
+        {{ /for }}
+      </dl>
+    </aside>
+    {{ /if }}
+  </article>
+
+  <nav class="page-pagination pagination">
+    <ul>
+      {{- set previousPost = search.previousPage(url, "type=post") }}
+      {{- if previousPost }}
+      <li class="pagination-prev">
+        <a href="{{ previousPost.url }}" rel="prev">
+          <span>{{ i18n.nav.previous_post }}</span>
+          <strong>{{ previousPost.title }}</strong>
+        </a>
+      </li>
+      {{ /if }}
+
+      {{- set nextPost = search.nextPage(url, "type=post") }}
+      {{- if nextPost }}
+      <li class="pagination-next">
+        <a href="{{ nextPost.url }}" rel="next">
+          <span>{{ i18n.nav.next_post }}</span>
+          <strong>{{ nextPost.title }}</strong>
+        </a>
+      </li>
+      {{ /if }}
+    </ul>
+  </nav>
+</main>

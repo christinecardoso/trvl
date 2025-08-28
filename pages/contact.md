@@ -1,6 +1,7 @@
 ---
 layout: layouts/page.vto
 title: Contact
+draft: true
 menu:
   visible: true
   order: 2

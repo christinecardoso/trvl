@@ -52,3 +52,19 @@
 .post-link {
   display: inline-block;
 }
+
+article {
+  table {
+    @apply w-full table-fixed text-center border-collapse border border-gray-400;
+    
+    th, 
+    td {
+      @apply border border-gray-300 ;
+    }
+
+    tbody > tr > td {
+      @apply table-cell pr-0;
+    }
+  }
+}
+

@@ -2,6 +2,8 @@
 layout: layouts/base.vto
 bodyClass: body-home
 title: Home
+home:
+  welcome: PRPL TRVL
 ---
 
 <header class="page-header center">
@@ -10,6 +12,13 @@ title: Home
 </header>
 
 <main class="{{ it.bodyClass }}">
+
+    {{ for prod of search.pages("type=product", "date=desc", 3) }}
+    {{ prod.title }}
+
+    {{ /for }}
+
+
   <section class="postList">
     <br>
     {{ for post of search.pages("type=post", "date=desc", 3) }}

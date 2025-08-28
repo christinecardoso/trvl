@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "waterfall-trails",
+    "title": "Waterfall Trails",
+    "query": "tags~waterfall tags~hiking"
+  },
+  {
+    "slug": "lake-hikes",
+    "title": "Lake Hikes",
+    "query": "tags=lake tags=hiking"
+  }
+]

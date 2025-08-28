@@ -1,0 +1,38 @@
+---
+layout: layouts/base.vto
+bodyClass: body-product
+---
+
+<main class="{{ it.bodyClass }}">
+  <article class="product" data-pagefind-body data-title="{{ name }}" data-pagefind-index-attrs="data-title">
+    <header class="product-header">
+      <h1 class="product-title">{{ name }}</h1>
+    </header>
+
+    <div class="product-body body">
+      <div class="grid md:grid-cols-2 gap-6">
+        <img src="{{ thumbnail_url }}" alt="{{ name }}" class="rounded shadow" />
+
+        <div>
+          <form action="/api/create-checkout-session" method="POST" class="space-y-4">
+            <label for="variant" class="block font-medium">Choose an option:</label>
+            <select name="variantId" id="variant" class="border rounded p-2 w-full">
+              {{ for v of variants }}
+                <option value="{{ v.id }}">{{ v.name }} — ${{ v.retail_price }}</option>
+              {{ /for }}
+            </select>
+
+            <button type="submit" class="btn-primary">Buy Now</button>
+          </form>
+        </div>
+      </div>
+
+      {{ if content }}
+      <section class="product-extra mt-8">
+        {{ content }}
+      </section>
+      {{ /if }}
+    </div>
+  </article>
+</main>
+

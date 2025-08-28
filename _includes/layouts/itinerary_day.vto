@@ -1,0 +1,50 @@
+---
+layout: layouts/base.vto
+---
+
+{{ set it_slug = itinerary_title |> slugify }}
+
+<main class="container mx-auto px-4 py-8">
+  <header class="mb-6">
+    <a class="text-sm underline" href="/itineraries/">← All Itineraries</a>
+    <h1 class="text-3xl font-bold mt-1">{{ itinerary_title }} — Day {{ day_num }}</h1>
+
+    {{ if start_date }}
+      {{ set y = start_date.getUTCFullYear() }}
+      {{ set m = start_date.getUTCMonth() }}
+      {{ set d = start_date.getUTCDate() }}
+      {{ set thisDate = new Date(Date.UTC(y, m, d + (day_num - 1))) }}
+      {{ set niceDate = thisDate.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }) }}
+      <p class="text-zinc-600">{{ niceDate }}</p>
+    {{ /if }}
+
+    <nav class="mt-2 flex gap-3">
+      {{ if prev_day_url }}<a class="underline" href="{{ prev_day_url }}">← Previous</a>{{ /if }}
+      {{ if next_day_url }}<a class="underline" href="{{ next_day_url }}">Next →</a>{{ /if }}
+    </nav>
+  </header>
+
+{{ for page of search.pages(`itinerary_slug=${it_slug}`, "order") }}
+  {{ if page.itinerary_day == day_num }}
+  <div class="mb-4 border-b border-gray-300 pb-4">
+    <h3 class="text-xl font-sans">
+    {{ page.title }}           
+    {{ if page.visit_time }}
+      <span class="text-xl text-gray-600 italic">(Allow {{ page.visit_time }})</span>
+    {{ /if }}
+    {{ if page.travel_time }}
+      <span class="text-xl text-gray-600 italic">({{ page.travel_time }})</span>
+    {{ /if }}
+    </h3>
+    <div class="copy">
+      {{ set raw = page.content || "" }}
+      {{ set parts = raw.split("## Schedule") }}
+      {{ set scheduleMd = parts.length > 1 ? parts[1] : "" }}
+      {{ scheduleMd |> md }}
+    </div>
+  </div>
+  {{ /if }}
+
+{{ /for }}
+
+</main>

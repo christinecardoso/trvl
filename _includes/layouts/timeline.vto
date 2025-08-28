@@ -1,0 +1,74 @@
+---
+layout: layouts/base.vto
+bodyClass: body-post
+---
+
+{{ set slug = title |> slugify }}
+
+<ol>
+  {{ for day of search.pages(`itinerary_slug=${slug}`, "itinerary_day") }}
+    <li>
+      <a href="{{ day.url }}">{{ day.title }}</a>
+      <small>Day {{ day.itinerary_day }}</small>
+    </li>
+  {{ /for }}
+</ol>
+
+
+
+<table class="itinerary-table w-full border-collapse border border-gray-300">
+  <thead>
+    <tr class="bg-gray-100">
+      <th class="border border-gray-300 p-2 text-left">Time</th>
+      {% for day in itinerary %}
+        <th class="border border-gray-300 p-2 text-center">
+           day.displayDate <br>
+          <span class="text-sm text-gray-500"> day.weekday </span>
+        </th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {# Collect all unique times from all posts #}
+    {% set timeslots = [] %}
+    {% for day in itinerary %}
+      {% for post in day.posts %}
+        {% for plan in post.schedule %}
+          {% if plan.time and !(plan.time in timeslots) %}
+            {% set timeslots.push(plan.time) %}
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+    {% set timeslots = timeslots.sort() %}
+
+    {# Render rows per time #}
+    {% for time in timeslots %}
+      <tr>
+        <td class="border border-gray-300 p-2 font-semibold w-28">{{ time }}</td>
+        {% for day in itinerary %}
+          {% set cellPlans = [] %}
+          {% for post in day.posts %}
+            {% for plan in post.schedule %}
+              {% if plan.time == time %}
+                {% set cellPlans.push(plan) %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+
+          <td class="border border-gray-300 p-2 align-top">
+            {% if cellPlans.length %}
+              {% for plan in cellPlans %}
+                <div class="plan.statusClass p-1 rounded mb-1">
+                  plan.text
+                </div>
+              {% endfor %}
+            {% else %}
+              <span class="text-gray-400">—</span>
+            {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
