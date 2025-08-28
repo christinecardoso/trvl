@@ -12,6 +12,9 @@
 @import "css/post.css";
 @import "css/archive.css";
 
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant light (&:where([data-theme=light], [data-theme=light] *));
+
 /* google-fonts */
 
 @view-transition {
