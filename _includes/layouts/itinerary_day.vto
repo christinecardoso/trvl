@@ -27,7 +27,7 @@ layout: layouts/base.vto
 {{ for page of search.pages(`itinerary_slug=${it_slug}`, "order") }}
   {{ if page.itinerary_day == day_num }}
   <div class="mb-4 border-b border-gray-300 pb-4">
-    <h3 class="text-xl font-sans">
+    <h3 class="md:text-xl font-sans">
     {{ page.title }}           
     {{ if page.visit_time }}
       <span class="text-xl text-gray-600 italic">(Allow {{ page.visit_time }})</span>
