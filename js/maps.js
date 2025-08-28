@@ -1,4 +1,4 @@
-import { map, tileLayer, marker, icon, divIcon } from "https://esm.sh/leaflet@1.9.4";
+import { map as createMap, tileLayer, marker } from "https://esm.sh/leaflet@1.9.4";
 
 export function initMap() {
   const container = document.getElementById("map");
@@ -6,23 +6,16 @@ export function initMap() {
 
   // Start map centered on first place or default
   const start = window.places[0] || { lat: 0, lng: 0 };
-  const map = L.map("map").setView([start.lat, start.lng], 9);
+  const m = createMap("map").setView([start.lat, start.lng], 9);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "© OpenStreetMap contributors",
-  }).addTo(map);
+  }).addTo(m);
 
-  const icons = {
-    activity: L.divIcon({ className: "icon-activity" }),
-    day_trip: L.divIcon({ className: "icon-daytrip" }),
-    lodging: L.divIcon({ className: "icon-lodging" }),
-    destination: L.divIcon({ className: "icon-destination" }),
-  };
-
+  // Just use regular marker for all places
   window.places.forEach((p) => {
-    const icon = icons[p.category] || icons.activity;
-    L.marker([p.lat, p.lng], { icon })
-      .addTo(map)
+    marker([p.lat, p.lng])
+      .addTo(m)
       .bindPopup(`<a href="${p.url}">${p.title}</a>`);
   });
 }

@@ -2,6 +2,10 @@
 layout: layouts/base.vto
 ---
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<script type="module" src="/js/maps.js"></script>
+
 {{ set it_slug = itinerary_title |> slugify }}
 
 <main class="container mx-auto px-4 py-8">
@@ -24,7 +28,8 @@ layout: layouts/base.vto
     </nav>
   </header>
 
-{{ for page of search.pages(`itinerary_slug=${it_slug}`, "order") }}
+{{ set todo = search.pages(`itinerary_slug=${it_slug}`, "order") }}
+{{ for page of todo }}
   {{ if page.itinerary_day == day_num }}
   <div class="mb-4 border-b border-gray-300 pb-4">
     <h3 class="md:text-xl font-sans">
@@ -37,6 +42,8 @@ layout: layouts/base.vto
     {{ /if }}
     </h3>
     <div class="copy">
+            {{ page.lat }} {{ page.lng }}
+
       {{ set raw = page.content || "" }}
       {{ set parts = raw.split("## Schedule") }}
       {{ set scheduleMd = parts.length > 1 ? parts[1] : "" }}
@@ -48,3 +55,27 @@ layout: layouts/base.vto
 {{ /for }}
 
 </main>
+
+
+<h2>Map of Quito & Nearby</h2>
+<div id="map" class="h-96 rounded shadow"></div>
+<script>
+  window.places = [
+
+    // Related places
+    {{ for place of todo }}
+      {{ if place.itinerary_day == day_num }}
+
+      {{ if place.lat && place.lng }}
+      {
+        title: "{{ place.title }}",
+        url: "{{ place.url }}",
+        lat: {{ place.lat }},
+        lng: {{ place.lng }},
+        category: "{{ place.travel_category || 'activity' }}",
+      },
+      {{ /if }}
+      {{ /if }}
+    {{ /for }}
+  ];
+</script>
