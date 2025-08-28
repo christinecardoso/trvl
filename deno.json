@@ -7,10 +7,9 @@
   },
   "tasks": {
     "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
-    "fetch": "deno run -A --env-file=.env scripts/fetch_products.ts",
-    "prod": "deno task fetch && deno task lume --location=https://xeo.land",
-    "build": "deno task fetch && deno task lume",
-    "serve": "deno task fetch && deno task lume -s",
+    "prod": "deno task lume --location=https://xeo.land",
+    "build": "deno task lume",
+    "serve": "deno task lume -s",
     "d": "deno task serve",
     "cms": "deno task lume cms",
     "lup": "deno task lume upgrade",
