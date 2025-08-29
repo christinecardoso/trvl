@@ -1,24 +1,36 @@
 import { map as createMap, tileLayer, marker } from "https://esm.sh/leaflet@1.9.4";
 
-export function initMap() {
-  const container = document.getElementById("map");
-  if (!container || !window.places) return;
+let _map;
+let _markers;
 
-  // Start map centered on first place or default
-  const start = window.places[0] || { lat: 0, lng: 0 };
-  const m = createMap("map").setView([start.lat, start.lng], 9);
+export function initMap(places = []) {
+  const el = document.getElementById("map");
+  if (!el) return;
 
-  tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors",
-  }).addTo(m);
+  // Create or reuse map
+  if (!_map) {
+    _map = createMap(el).setView(places[0] ? [places[0].lat, places[0].lng] : [0, 0], places[0] ? 10 : 2);
+    tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+    }).addTo(_map);
+  }
 
-  // Just use regular marker for all places
-  window.places.forEach((p) => {
-    marker([p.lat, p.lng])
-      .addTo(m)
-      .bindPopup(`<a href="${p.url}">${p.title}</a>`);
+  // Clear old markers
+  if (_markers) _map.removeLayer(_markers);
+  _markers = L.layerGroup().addTo(_map);
+
+  // Add markers
+  places.forEach((p) => {
+    if (typeof p.lat !== "number" || typeof p.lng !== "number") return;
+    const mk = marker([p.lat, p.lng]).addTo(_markers);
+    const title = p.title ?? "";
+    const url = p.url ? `<br><a href="${p.url}">Open</a>` : "";
+    mk.bindPopup(`<strong>${title}</strong>${url}`);
   });
-}
 
-// Run on page load
-document.addEventListener("DOMContentLoaded", initMap);
+  // Fit to markers
+  if (places.length) {
+    const bounds = L.latLngBounds(places.map((p) => [p.lat, p.lng]));
+    _map.fitBounds(bounds, { padding: [20, 20] });
+  }
+}

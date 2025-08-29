@@ -4,8 +4,6 @@ layout: layouts/base.vto
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-<script type="module" src="/js/maps.js"></script>
-
 {{ set it_slug = itinerary_title |> slugify }}
 
 <main class="container mx-auto px-4 py-8">
@@ -28,54 +26,47 @@ layout: layouts/base.vto
     </nav>
   </header>
 
-{{ set todo = search.pages(`itinerary_slug=${it_slug}`, "order") }}
-{{ for page of todo }}
-  {{ if page.itinerary_day == day_num }}
-  <div class="mb-4 border-b border-gray-300 pb-4">
-    <h3 class="md:text-xl font-sans">
-    {{ page.title }}           
-    {{ if page.visit_time }}
-      <span class="text-sm light:text-gray-600 italic">(Allow {{ page.visit_time }})</span>
-    {{ /if }}
-    {{ if page.travel_time }}
-      <span class="text-sm light:text-gray-600 italic">({{ page.travel_time }})</span>
-    {{ /if }}
-    </h3>
-    <div class="copy">
-            {{ page.lat }} {{ page.lng }}
-
-      {{ set raw = page.content || "" }}
-      {{ set parts = raw.split("## Schedule") }}
-      {{ set scheduleMd = parts.length > 1 ? parts[1] : "" }}
-      {{ scheduleMd |> md }}
-    </div>
-  </div>
+  {{ if (pages?.today?.length) }}
+    <section class="itinerary-list mb-4">
+      {{ for p of pages.today }}
+        <div class="mb-4 border-b border-gray-300 pb-4">
+          <h3 class="md:text-xl font-sans">
+            <a href="{{ page.url }}">{{ p.title }}</a>
+            {{ if p.visit_time }}
+              <span class="text-sm light:text-gray-600 italic">(Allow {{ p.visit_time }})</span>
+            {{ /if }}
+            {{ if p.travel_time }}
+              <span class="text-sm light:text-gray-600 italic">({{ p.travel_time }})</span>
+            {{ /if }}
+          </h3>
+          <div class="copy">
+            <!-- {{ p.lat }} {{ p.lng }} -->
+            {{ set raw = p.content || "" }}
+            {{ set parts2 = raw.split("## Schedule") }}
+            {{ set scheduleMd = parts2.length > 1 ? parts2[1] : "" }}
+            {{ scheduleMd |> md }}
+          </div>
+        </div>
+      {{ /for }}
+    </section>
   {{ /if }}
-
-{{ /for }}
 
 </main>
 
 
 <h2>Map of Quito & Nearby</h2>
 <div id="map" class="h-96 rounded shadow"></div>
-<script>
-  window.places = [
 
-    // Related places
-    {{ for place of todo }}
-      {{ if place.itinerary_day == day_num }}
+<script type="module">
+  import { initMap } from "/js/maps.js";
+  // Prefer the prebuilt array from itineraries.page.js
+  const prebuilt = {{ JSON.stringify((pages && pages.mapPlaces) ? pages.mapPlaces : null) }};
+  const places = prebuilt;
 
-      {{ if place.lat && place.lng }}
-      {
-        title: "{{ place.title }}",
-        url: "{{ place.url }}",
-        lat: {{ place.lat }},
-        lng: {{ place.lng }},
-        category: "{{ place.travel_category || 'activity' }}",
-      },
-      {{ /if }}
-      {{ /if }}
-    {{ /for }}
-  ];
+  if (Array.isArray(places) && places.length) {
+    initMap(places);          // maps.js should accept an array of points
+  } else {
+    const el = document.getElementById("map");
+    if (el) el.textContent = "No mapped places for this day.";
+  }
 </script>

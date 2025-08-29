@@ -8,6 +8,13 @@ itinerary_days:
   - "5"
   - "6"
 kind: lodging
+places:
+  - name: "Forest Airbnb + Tub"
+    lat: -0.110831 
+    lng: -78.312366
+  - name: "Panoramic Tiny House + Sauna"
+    lat: -0.196408
+    lng: -78.306901
 ---
 -0.106594,-78.290146
 – 15-min walk to [[El Quinche Sanctuary]]  
@@ -26,3 +33,7 @@ kind: lodging
 [Oasis, your private paradise with jacuzzi in Quito, Pichincha, Ecuador - Airbnb](https://www.airbnb.com/rooms/50720734?check_out=2025-09-02&viralityEntryPoint=1&unique_share_id=98E06006-4E37-421D-B3BE-D60CF12BFB41&slcid=7576a343a49043379abe9dc94bd4b548&s=76&adults=2&check_in=2025-08-28&slug=Dsi5d9kZ&source_impression_id=p3_1755821719_P3ODodoW5pE7JtWc)
 
 [The bubble, immerse yourself in nature - Dome houses for Rent in Quito, Pichincha, Ecuador - Airbnb](https://www.airbnb.com/rooms/586060759988648947?check_out=2025-09-02&viralityEntryPoint=1&unique_share_id=AFDA5468-D227-4DDB-8231-D31CFB5AA59A&slcid=6cb835ae67e24870879dad472a2832a9&s=76&adults=2&check_in=2025-08-28&slug=RZNW5leg&source_impression_id=p3_1755821790_P3BSg_zsXT2VJRhX)
+
+[Forest home near airport - epic view- pet friendly - Tiny houses for Rent in Quito, Pichincha, Ecuador - Airbnb](https://www.airbnb.com/rooms/1301756338045075351?photo_id=2040642180&source_impression_id=p3_1756480588_P3HWYzOww0lSFk1g&previous_page_section_name=1000&check_in=2025-08-31&guests=1&adults=1&check_out=2025-09-01)
+
+[Panoramic Tiny House with amazing Sauna - Tiny houses for Rent in Quito, Pichincha, Ecuador - Airbnb](https://www.airbnb.com/rooms/1334875357313069100?photo_id=2069113125&source_impression_id=p3_1756480588_P3Q43oFPYA6BbkYW&previous_page_section_name=1000)

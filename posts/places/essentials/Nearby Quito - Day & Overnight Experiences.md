@@ -51,7 +51,7 @@ title: Nearby Quito - Day & Overnight Experiences
     - Possible as a day trip, better as overnight to explore fully.
     - _Go early or arrange driver/tour._
         
-- **San Antonio de Ibarra (2.5 hrs)**
+- **[[San Antonio de Ibarra]] (2.5 hrs)**
     - Town of master wood carvers. Unique for religious art and contemporary wooden sculpture.
     - Combine with Otavalo for a culture-heavy trip.
 

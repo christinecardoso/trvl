@@ -6,4 +6,6 @@ itinerary_days:
   - "2"
   - "3"
 kind: lodging
+lat: -0.197218
+lng: -78.488928
 ---

@@ -82,7 +82,7 @@ Here are the best options nearby that travelers usually build into a Quito trip:
 
 ## 🏞 Cultural & Scenic Villages
 
-### **[[Otavalo Market]]** (2 hrs north)
+### **[[places/ecuador/activity/Otavalo Market (Plaza de los Ponchos)]]** (2 hrs north)
 
 - Famous indigenous craft market (Saturday is the biggest).
 - Known for textiles, alpaca sweaters, and jewelry.
@@ -144,7 +144,7 @@ Here’s how I’d map it out for the **last week of August in Quito**:
 Pick one big highlight close to Quito:
 
 - **[[places/ecuador/activity/Mindo Cloud Forest]]** (2 hrs NW): birds, waterfalls, chocolate tour, zip-lining.    
-- **[[Otavalo Market]] & [[Cuicocha Crater]]** (2 hrs N): crafts + stunning crater lake.
+- **[[places/ecuador/activity/Otavalo Market (Plaza de los Ponchos)]] & [[places/ecuador/activity/Cuicocha Crater and Lagoon]]** (2 hrs N): crafts + stunning crater lake.
 - **[[Papallacta Hot Springs]]** (1.5 hrs E): relaxing soak in mountain thermal pools.
 
 👉 These are all doable in one day — choose based on whether you want _adventure, culture, or relaxation_.

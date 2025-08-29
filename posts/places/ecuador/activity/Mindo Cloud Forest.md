@@ -23,6 +23,9 @@ tags:
   - Canopy-Walks
 travel_direction: northwest
 ---
+
+- **Mindo (2 hrs NW)** – Adventure/nature. Birdwatching, waterfalls, chocolate, ziplines.
+- 
 More driving from El Quinche, but possible if you leave early. Best for zipline, chocolate tours, birdwatching.
 
 (2 hrs northwest)

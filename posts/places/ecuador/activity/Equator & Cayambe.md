@@ -2,7 +2,7 @@
 title: Equator & Cayambe
 type: activity
 ---
-- **Morning** → [[Mitad del Mundo]] + [[Intiñan Museum]] (north of Quito).
+- **Morning** → [[Mitad del Mundo]] + [[places/ecuador/activity/Intiñan Solar Museum]] (north of Quito).
 - **Lunch (Cayambe)** → _Bizcochos + queso de hoja + hot chocolate_ at **Bizcochos Don Pedro**.
 - **Afternoon** → Quick stop at **Pululahua crater lookout**.
 - **Return toward Quito by 3:30 PM**
