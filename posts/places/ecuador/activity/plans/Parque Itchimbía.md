@@ -5,6 +5,8 @@ itinerary_day:
 itinerary_slug: ecuador-itinerary
 order: "4"
 visit_time: 1 hour
+lat: -0.2223173
+lng: -78.5016738
 ---
 
 ## Schedule

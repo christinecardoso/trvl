@@ -4,9 +4,11 @@ travel_category: In city
 visit_time: 1–2 hours
 visit_style: Quick Adventure
 itinerary_day:
-  - "2"
+  - "3"
 itinerary_slug: ecuador-itinerary
 order: "2"
+lat: -0.1921742
+lng: -78.5219003
 ---
 ## Schedule
 Cable car up Pichincha Volcano; great for hikes (book in good weather).

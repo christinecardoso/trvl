@@ -16,7 +16,10 @@ itinerary_day:
 itinerary_slug: ecuador-itinerary
 order: "1"
 visit_time: 1–2 hours
+lat: 0.0021692
+lng: -78.455825
 ---
 ## Schedule
 Visit the **Middle of the World, equator monument** and the interactive museum. 
+Checkout the Incan Rumichucho ruins and the actual Incan equator adoration spot.
 *Snack:* Try **helados de paila** (fruit sorbet in copper pans).

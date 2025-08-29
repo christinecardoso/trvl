@@ -132,7 +132,7 @@ Here’s how I’d map it out for the **last week of August in Quito**:
 ### **Monday–Tuesday: Quito City + Nearby**
 
 - **[Historic Old Town Quito walking tour](places/ecuador/activity/Historic%20Old%20Town%20Quito%20walking%20tour.md)** → Plaza Grande, La Compañía church (golden interior), Basilica del Voto climb.
-- **[El Panecillo hill](places/ecuador/activity/El%20Panecillo%20hill.md)** for city views.
+- **[Panecillo Hill and Virgen of Quito](places/ecuador/activity/Panecillo%20Hill%20and%20Virgen%20of%20Quito.md)** for city views.
 - **[[TelefériQo cable car]]** if weather is clear (morning is best).
 - **Evening**: [[La Ronda street]] for food, music, and atmosphere.
 - If time allows: quick visit to **[[places/ecuador/activity/Mitad del Mundo]]** (equator monument, 45 min drive).
