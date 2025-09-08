@@ -9,6 +9,7 @@ import attrs from "npm:markdown-it-attrs@4.3.1";
 import { wikilinksPlugin } from "./plugins/wikilinks.ts";
 import wikilinks from "https://deno.land/x/lume_markdown_plugins/wikilinks.ts";
 import slugify from "lume/plugins/slugify_urls.ts";
+import transformImages from "lume/plugins/transform_images.ts";
 
 import { merge } from "lume/core/utils/object.ts";
 
@@ -89,13 +90,16 @@ export default function (userOptions?: Options) {
     .add("style.css") //Add the entry point
     .add("logo.png") //Add the entry point
     .use(wikilinks())
-          .use(slugify({
-  lowercase: true, // Converts all characters to lowercase
-  alphanumeric: true, // Replace non-alphanumeric characters with their equivalent. Example: ñ to n.
-  separator: "-", // Character used as separator for words
-  stopWords: ["and", "or", "the"], // A list of words not included in the slug
-            }))
-
+    .use(transformImages({
+      // Only process raster images; leave SVGs alone so svg2png isn't invoked
+      extensions: [".jpg", ".jpeg", ".png", ".webp", ".avif"],
+    }))
+    .use(slugify({
+      lowercase: true, // Converts all characters to lowercase
+      alphanumeric: true, // Replace non-alphanumeric characters with their equivalent. Example: ñ to n.
+      separator: "-", // Character used as separator for words
+      stopWords: ["and", "or", "the"], // A list of words not included in the slug
+    }))
     .use(relations({
       idKey: "slug",      // match by slug
       typeKey: "kind",    // use 'kind' instead of 'type'
