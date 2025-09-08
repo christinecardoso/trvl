@@ -16,18 +16,19 @@ bodyClass: body-product-archive
         {{
           set pageCategories = search.pages("type=category pagination.page=1", "category")
         }}
-        {{ if pageCategories.length }}
-          <nav class="page-navigation">
-            <h2>{{ i18n.search.categories }}</h2>
-            <ul class="page-navigation-tags">
-              {{ for page of pageCategories }}
-                <li>
-                  <a href="{{ page.url }}" class="badge">{{ page.category }}</a>
-                </li>
-              {{ /for }}
-            </ul>
-          </nav>
-        {{ /if }}
+      {{ /if }}
+      {{ if pageCategories.length }}
+        <nav class="page-navigation">
+          <h2>{{ i18n.search.categories }}</h2>
+          <ul class="page-navigation-tags">
+            {{ for page of pageCategories }}
+              <li>
+                <a href="{{ page.url }}" class="badge">{{ page.category }}</a>
+              </li>
+            {{ /for }}
+          </ul>
+        </nav>
+      {{ /if }}
 
 {{ if type == "product" }}
   {{ set pageTags = search.pages("type=tag pagination.page=1", "tag") }}
