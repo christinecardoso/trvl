@@ -1,0 +1,23 @@
+{{# Sticky mobile dock for itinerary surfaces (Wanderlog-like trip tabs) #}}
+{{ if it_slug && days_count }}
+<nav class="trip-dock" aria-label="Trip views">
+  <a
+    href="{{ itinerary_url || '/itineraries/' + it_slug + '/' }}"
+    class="trip-dock-link{{ if dockActive === 'overview' }} is-active{{ /if }}"
+    {{ if dockActive === "overview" }}aria-current="page"{{ /if }}
+  >Overview</a>
+  <a
+    href="/itineraries/{{ it_slug }}/day-{{ day_num || 1 }}/"
+    class="trip-dock-link{{ if dockActive === 'day' }} is-active{{ /if }}"
+    {{ if dockActive === "day" }}aria-current="page"{{ /if }}
+  >Days</a>
+  <a
+    href="/itineraries/{{ it_slug }}/timetable/"
+    class="trip-dock-link{{ if dockActive === 'timetable' }} is-active{{ /if }}"
+    {{ if dockActive === "timetable" }}aria-current="page"{{ /if }}
+  >Timetable</a>
+  {{ if mapAnchor }}
+    <a href="{{ mapAnchor }}" class="trip-dock-link">Map</a>
+  {{ /if }}
+</nav>
+{{ /if }}

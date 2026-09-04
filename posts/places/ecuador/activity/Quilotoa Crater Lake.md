@@ -21,6 +21,8 @@ entrance_fee_usd: 2
 altitude_meters: 3914
 travel_time: 3.5 hrs
 visit_style: Eco Adventure
+kind: activity
+bucket_list: true
 ---
 ### (3–3.5 hrs Drive)
 - A turquoise volcanic lake inside a collapsed caldera.

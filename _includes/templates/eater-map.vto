@@ -1,0 +1,96 @@
+{{# Eater-style numbered list + sticky map.
+    Expects: items, mapPlaces, mapLabel
+    Optional: filterCats, filterKinds, showFilters, bucketTheme, emptyNote
+#}}
+{{ if mapPlaces?.length }}
+<section
+  class="eater-map is-list-mode"
+  data-eater-map
+  aria-label="{{ mapLabel || "Map" }}"
+>
+  {{ if filterCats?.length || filterKinds?.length }}
+    <div class="eater-map-toolbar" data-eater-filters>
+      {{ if filterCats?.length }}
+        <div class="eater-map-filter-row" role="group" aria-label="Distance">
+          <button type="button" class="eater-map-chip is-active" data-filter-cat="all">All</button>
+          {{ for cat of filterCats }}
+            <button type="button" class="eater-map-chip" data-filter-cat="{{ cat }}">{{ cat }}</button>
+          {{ /for }}
+        </div>
+      {{ /if }}
+      {{ if filterKinds?.length > 1 }}
+        <div class="eater-map-filter-row" role="group" aria-label="Kind">
+          <button type="button" class="eater-map-chip is-active" data-filter-kind="all">All kinds</button>
+          {{ for k of filterKinds }}
+            <button type="button" class="eater-map-chip" data-filter-kind="{{ k }}">{{ k }}</button>
+          {{ /for }}
+        </div>
+      {{ /if }}
+    </div>
+  {{ /if }}
+
+  <div class="eater-map-layout">
+    <div class="eater-map-list-pane">
+      <ol class="eater-map-list">
+        {{ for item of items }}
+          <li
+            class="eater-map-item{{ if item.has_map }} eater-map-item--mapped{{ /if }}"
+            data-eater-item
+            {{ if item.map_stop_id && item.has_map }}data-map-stop-id="{{ item.map_stop_id }}"{{ /if }}
+            data-travel-category="{{ item.travel_category || "" }}"
+            data-kind="{{ item.kind || "" }}"
+          >
+            {{ if item.map_number }}
+              <span class="eater-map-num" aria-hidden="true">{{ item.map_number }}</span>
+            {{ else }}
+              <span class="eater-map-num eater-map-num--empty" aria-hidden="true"></span>
+            {{ /if }}
+            <div class="eater-map-item-body">
+              <a class="eater-map-item-title" href="{{ item.url }}">{{ item.title }}</a>
+              <p class="eater-map-item-meta">
+                {{ if item.travel_category }}<span>{{ item.travel_category }}</span>{{ /if }}
+                {{ if item.kind }}<span>{{ item.kind }}</span>{{ /if }}
+                {{ if item.bucket_list }}<span>Bucket list</span>{{ /if }}
+                {{ if item.visit_time }}<span>{{ item.visit_time }}</span>{{ /if }}
+              </p>
+              {{ if item.excerpt }}
+                <p class="eater-map-item-excerpt">{{ item.excerpt }}</p>
+              {{ /if }}
+            </div>
+          </li>
+        {{ /for }}
+      </ol>
+      {{ if !items?.length }}
+        <p class="itin-empty">{{ emptyNote || "No stops with map coordinates yet." }}</p>
+      {{ /if }}
+    </div>
+
+    <div class="eater-map-pane">
+      <div class="itin-map-head">
+        <span class="itin-map-title">Map</span>
+        <a
+          class="itin-map-export"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-gmaps-export
+          hidden
+        >Google Maps</a>
+      </div>
+      <div
+        id="map"
+        class="itin-map eater-map-canvas"
+        role="img"
+        aria-label="{{ mapLabel || "Map of stops" }}"
+      ></div>
+    </div>
+  </div>
+
+  <div class="eater-map-toggle" data-eater-view-toggle role="group" aria-label="View">
+    <button type="button" class="eater-map-toggle-btn is-active" data-view="list" aria-pressed="true">List</button>
+    <button type="button" class="eater-map-toggle-btn" data-view="map" aria-pressed="false">Map</button>
+  </div>
+</section>
+{{ else }}
+  <p class="itin-map-empty">{{ emptyNote || "Add lat/lng on stops to populate this map." }}</p>
+{{ /if }}

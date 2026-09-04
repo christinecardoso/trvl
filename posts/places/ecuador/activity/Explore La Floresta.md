@@ -1,15 +1,23 @@
 ---
 title: Explore La Floresta
 kind: eats
+visit_style: Dinner
+flexible: true
 itinerary_day:
   - "2"
 itinerary_slug: ecuador-itinerary
 visit_time: 1.5-2 hrs
 order: "5"
+travel_category: In city
+options:
+  - title: Urko
+    notes: Modern tasting menu; reserve ahead
+  - title: Ciré
+    notes: Creative Andean fusion, rooftop views
 ---
-## Schedule
-Bohemian neighborhood with street art, cafes, and indie vibes.
+Bohemian neighborhood with street art, cafés, and indie vibes — pick one dinner spot, you don’t need both.
+<!--more-->
 
-Enjoy a refined Ecuadorian **dinner** in Quito’s artsy district: 
-- **Urko** (modern tasting menu; reserve)
-- **Ciré** (creative Andean fusion, rooftop views).
+## Overview
+
+La Floresta is Quito’s artsy dining district. Reserve Urko ahead; Ciré works for a creative rooftop meal without a tasting commitment.

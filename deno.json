@@ -8,13 +8,14 @@
   "tasks": {
     "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
     "prod": "deno task lume --location=https://xeo.land",
-    "build": "deno task lume",
+    "build": "deno task convert_svg && deno task lume",
     "serve": "deno task lume -s",
     "d": "deno task serve",
     "cms": "deno task lume cms",
     "lup": "deno task lume upgrade",
     "lupd": "deno task lume upgrade --dev",
-    "up": "deno run -A --quiet 'https://deno.land/x/nudd@v0.2.10/cli.ts' update deno.json"
+    "up": "deno run -A --quiet 'https://deno.land/x/nudd@v0.2.10/cli.ts' update deno.json",
+    "convert_svg": "deno run --allow-read --allow-write scripts/svg_to_png.ts"
   },
   "compilerOptions": {
     "types": [

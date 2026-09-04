@@ -1,0 +1,11 @@
+{{# On a day-plan post: point readers to the itinerary day timeline instead of duplicating it #}}
+{{ if primary_day_url }}
+  <aside class="day-plan-cta">
+    <p class="day-plan-cta-lead">
+      See this evening on the itinerary day view — map pins for each option and the timed slot live there.
+    </p>
+    <a class="day-plan-cta-link" href="{{ primary_day_url }}">
+      View Day {{ primary_day_num || itinerary_day }} timeline →
+    </a>
+  </aside>
+{{ /if }}

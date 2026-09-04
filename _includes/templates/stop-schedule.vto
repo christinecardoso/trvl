@@ -1,0 +1,123 @@
+{{# Timed slots — day variant is top-level on itinerary days; nested variant sits inside a stop card #}}
+{{ if schedule?.length }}
+  {{ set isDay = variant === "day" }}
+  <div class="stop-schedule{{ if isDay }} is-day-timeline{{ /if }}">
+    {{ if !isDay }}
+      <h3 class="stop-schedule-heading">
+        {{ heading || "Day plan" }}
+        <span class="stop-schedule-count">{{ schedule.length }}</span>
+      </h3>
+    {{ /if }}
+    <ol class="stop-schedule-list{{ if isDay }} day-timeline-list{{ /if }}">
+      {{ for slot of schedule }}
+        <li
+          class="stop-schedule-item{{ if isDay }} day-timeline-item block-type-{{ slot.block_type || 'explore' }}{{ /if }}{{ if slot.options?.length }} has-options{{ /if }}"
+          {{ if isDay && slot.has_map }}data-map-stop-id="{{ slot.slotId }}"{{ /if }}
+        >
+          {{ if slot.time }}
+            <time class="stop-schedule-time" datetime="{{ slot.time }}">{{ slot.time }}</time>
+          {{ /if }}
+          <div class="stop-schedule-body">
+            {{ if isDay && slot.block_label }}
+              <span class="day-timeline-label">{{ slot.block_label }}</span>
+            {{ /if }}
+            <p class="stop-schedule-title">{{ slot.title }}</p>
+            {{ if slot.allow }}
+              <p class="stop-schedule-allow">Allow {{ slot.allow }}</p>
+            {{ /if }}
+            {{ if slot.notes }}
+              <p class="stop-schedule-notes">{{ slot.notes }}</p>
+            {{ /if }}
+
+            {{ if isDay && (slot.placeRefs?.length || slot.options?.length) }}
+              <div class="day-timeline-inside">
+                <span class="day-timeline-inside-label">Inside this slot</span>
+                {{ if slot.placeRefs?.length }}
+                  <ul class="stop-schedule-places">
+                    {{ for place of slot.placeRefs }}
+                      {{ set placeKey = (place.name || place.title) |> slugify }}
+                      <li
+                        {{ if place.lat != null && place.lng != null && slot.slotId }}
+                          data-map-place-id="{{ slot.slotId }}-{{ placeKey }}"
+                        {{ /if }}
+                      >
+                        {{ if place.url }}
+                          <a href="{{ place.url }}">{{ place.name }}</a>
+                        {{ else }}
+                          <span>{{ place.name }}</span>
+                        {{ /if }}
+                        {{ if place.type }}
+                          <span class="stop-schedule-place-type">{{ place.type }}</span>
+                        {{ /if }}
+                        {{ if place.notes }}
+                          <span class="stop-schedule-place-notes">{{ place.notes }}</span>
+                        {{ /if }}
+                      </li>
+                    {{ /for }}
+                  </ul>
+                {{ /if }}
+                {{ if slot.options?.length }}
+                  <ul class="stop-schedule-options">
+                    {{ for opt of slot.options }}
+                      {{ set optKey = (opt.title || opt.name) |> slugify }}
+                      <li
+                        {{ if opt.lat != null && opt.lng != null && slot.slotId }}
+                          data-map-place-id="{{ slot.slotId }}-{{ optKey }}"
+                        {{ /if }}
+                      >
+                        {{ if opt.url }}
+                          <a href="{{ opt.url }}">{{ opt.title || opt.name }}</a>
+                        {{ else }}
+                          <span>{{ opt.title || opt.name }}</span>
+                        {{ /if }}
+                        {{ if opt.type }}
+                          <span class="stop-schedule-place-type">{{ opt.type }}</span>
+                        {{ /if }}
+                        {{ if opt.notes }}
+                          <span class="stop-schedule-opt-notes">{{ opt.notes }}</span>
+                        {{ /if }}
+                      </li>
+                    {{ /for }}
+                  </ul>
+                {{ /if }}
+              </div>
+            {{ else }}
+              {{ if slot.placeRefs?.length }}
+                <ul class="stop-schedule-places">
+                  {{ for place of slot.placeRefs }}
+                    <li>
+                      {{ if place.url }}
+                        <a href="{{ place.url }}">{{ place.name }}</a>
+                      {{ else }}
+                        <span>{{ place.name }}</span>
+                      {{ /if }}
+                      {{ if place.type }}
+                        <span class="stop-schedule-place-type">{{ place.type }}</span>
+                      {{ /if }}
+                    </li>
+                  {{ /for }}
+                </ul>
+              {{ /if }}
+              {{ if slot.options?.length }}
+                <ul class="stop-schedule-options">
+                  {{ for opt of slot.options }}
+                    <li>
+                      {{ if opt.url }}
+                        <a href="{{ opt.url }}">{{ opt.title || opt.name }}</a>
+                      {{ else }}
+                        <span>{{ opt.title || opt.name }}</span>
+                      {{ /if }}
+                      {{ if opt.notes }}
+                        <span class="stop-schedule-opt-notes">{{ opt.notes }}</span>
+                      {{ /if }}
+                    </li>
+                  {{ /for }}
+                </ul>
+              {{ /if }}
+            {{ /if }}
+          </div>
+        </li>
+      {{ /for }}
+    </ol>
+  </div>
+{{ /if }}

@@ -1,0 +1,30 @@
+{{# Alternatives for the same time window — pick one, not a fixed route #}}
+{{ if options?.length }}
+  <div class="stop-options">
+    <h3 class="stop-options-heading">
+      {{ heading || "Pick one" }}
+      <span class="stop-options-count">{{ options.length }}</span>
+    </h3>
+    <ol class="stop-options-list">
+      {{ for opt of options }}
+        <li class="stop-options-item">
+          <div class="stop-options-main">
+            {{ if opt.url }}
+              <a class="stop-options-name" href="{{ opt.url }}">{{ opt.title || opt.name }}</a>
+            {{ else if opt.slug }}
+              <a class="stop-options-name" href="/{{ opt.slug }}/">{{ opt.title || opt.name }}</a>
+            {{ else }}
+              <span class="stop-options-name">{{ opt.title || opt.name }}</span>
+            {{ /if }}
+            {{ if opt.type }}
+              <span class="stop-options-type">{{ opt.type }}</span>
+            {{ /if }}
+          </div>
+          {{ if opt.notes }}
+            <p class="stop-options-notes">{{ opt.notes }}</p>
+          {{ /if }}
+        </li>
+      {{ /for }}
+    </ol>
+  </div>
+{{ /if }}

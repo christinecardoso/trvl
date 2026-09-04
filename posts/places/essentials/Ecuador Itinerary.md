@@ -5,9 +5,9 @@ start_date: 2025-08-27
 days: 7
 layout: layouts/itinerary.vto
 itinerary_slug: ecuador-itinerary
+country: Ecuador
+destination_slug: quito
 ---
-## **Day 1: Wed 8/27 – Arrival**
+Seven days based around Quito and El Quinche — city circuits, wedding weekend, Papallacta, Otavalo, and a full Cotopaxi day.
 
-- **7:05 PM arrival** → ~45 min customs → 25 min transfer to El Quinche.
-- **Dinner** → Basilica plaza food stalls (_caldo de gallina_, empanadas).
-- Rest, hydrate.
+Open **Day by day** or the **Timetable** for the live stop list. Arrival is late on Day 1 (~7 PM); hydrate and keep dinner light near the Basilica plaza.

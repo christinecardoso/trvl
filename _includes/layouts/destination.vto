@@ -4,111 +4,273 @@ bodyClass: body-post
 ---
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-<script type="module" src="/js/maps.js"></script>
-
 <main class="{{ it.bodyClass }}">
-  <article class="post" data-pagefind-body data-title="{{ title }}" data-pagefind-index-attrs="data-title">
-    <header class="post-header">
+  <article class="post destination-page" data-pagefind-body data-title="{{ title }}" data-pagefind-index-attrs="data-title">
+    <header class="post-header destination-header">
+      <p class="itin-breadcrumb">
+        <a href="/destinations/">Destinations</a>
+        <span aria-hidden="true">/</span>
+        {{ if country }}
+          {{ set countrySlug = country |> slugify }}
+          <a href="/countries/{{ countrySlug }}/">{{ country }}</a>
+          <span aria-hidden="true">/</span>
+        {{ /if }}
+        <span>{{ title }}</span>
+      </p>
       <h1 class="post-title">{{ title }}</h1>
-
-      {{ include "templates/post-details.vto" }}
-      <p>Region: {{ region }} | Country: {{ country }}</p>
-
-      <h2>Things to Do</h2>
-      {{ if activities }}
-        <ul>
-          {{ for act of activities }}
-            <li><a href="{{ act.url }}">{{ act.title }}</a></li>
+      <p class="destination-meta">
+        {{ if region }}<span>{{ region }}</span>{{ /if }}
+        {{ if country }}
+          <span><a href="/countries/{{ countrySlug }}/">{{ country }}</a></span>
+        {{ /if }}
+        {{ if season }}<span>{{ season }}</span>{{ /if }}
+      </p>
+      {{ if tags?.length }}
+        <p class="post-tags">
+          {{ for tag of tags }}
+            {{ set tagPage = search.page(`type=tag tag="${tag}"`) }}
+            {{ if tagPage }}
+              <a class="badge" href="{{ tagPage.url }}">{{ tag }}</a>
+            {{ else }}
+              <span class="badge">{{ tag }}</span>
+            {{ /if }}
           {{ /for }}
-        </ul>
-      {{ else }}
-        <p>No activities found for this destination.</p>
+        </p>
       {{ /if }}
-
-
-<h2>Day Trips</h2>
-<ul>
-  {{ for dest of travelCategories }}
-      <li><a href="{{ dest.url }}">{{ dest.title }}</a></li>
-  {{ /for }}
-</ul>
-
-
-
-
-      <h2>Posts & Itineraries</h2>
-      <ul>
-        {{ for post of posts }}
-          <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-        {{ /for }}
-      </ul>
-
-      <h2>Instagram Spots</h2>
-      <ul>
-        {{ for gal of galleries }}
-          <li><a href="{{ gal.url }}">{{ gal.title }}</a></li>
-        {{ /for }}
-      </ul>
-
+      {{ if excerpt }}
+        <div class="destination-lede body">
+          {{ excerpt |> md }}
+        </div>
+      {{ /if }}
     </header>
 
+    {{ if hub?.weekly?.count }}
+      <section
+        class="hub-today"
+        data-hub-today
+        aria-labelledby="hub-today-title"
+      >
+        <div class="hub-today-head">
+          <h2 id="hub-today-title">On the calendar</h2>
+          <p class="hub-today-date" data-hub-today-date></p>
+        </div>
+        <nav class="hub-today-days" aria-label="Day of week" data-hub-today-days>
+          {{ for d of hub.weekly.dayOrder }}
+            <button
+              type="button"
+              class="hub-today-day-chip"
+              data-day="{{ d }}"
+            >{{ hub.weekly.dayLabels[d].slice(0, 3) }}</button>
+          {{ /for }}
+        </nav>
+        <ul class="hub-today-list" data-hub-today-list></ul>
+        <p class="hub-today-empty" data-hub-today-empty hidden>
+          Nothing scheduled this day yet — browse themes or in-city stops below.
+        </p>
+      </section>
+    {{ /if }}
 
-    {{ if toc.length }}
-    <nav class="toc">
-      <h2>{{ i18n.nav.toc }}</h2>
-      <ol>
-        {{ for item of toc }}
-        <li>
-          <a href="#{{ item.slug }}">{{ item.text }}</a>
-
-          {{ if item.children.length }}
-          <ul>
-            {{ for child of item.children }}
-            <li>
-              <a href="#{{ child.slug }}">{{ child.text }}</a>
-            </li>
-            {{ /for }}
-          </ul>
+    {{ if hub?.itineraries?.length }}
+      <section class="destination-itineraries" aria-labelledby="dest-itineraries">
+        <div class="home-section-head">
+          <h2 id="dest-itineraries">Itineraries</h2>
+          {{ if countrySlug }}
+            <a href="/countries/{{ countrySlug }}/">{{ country }} hub</a>
           {{ /if }}
-        </li>
+        </div>
+        <ul class="itin-archive-grid">
+          {{ for itin of hub.itineraries }}
+            {{ set islug = itin.itinerary_slug }}
+            {{ if !islug }}{{ set islug = itin.title |> slugify }}{{ /if }}
+            {{ set dayCount = Number(itin.days) || 0 }}
+            <li class="itin-card">
+              <a class="itin-card-link" href="{{ itin.url }}">
+                <span class="itin-card-eyebrow">Itinerary</span>
+                <h3 class="itin-card-title">{{ itin.title }}</h3>
+                <p class="itin-card-meta">
+                  {{ if dayCount }}<span>{{ dayCount }} day{{ if dayCount !== 1 }}s{{ /if }}</span>{{ /if }}
+                </p>
+              </a>
+              <p class="itin-card-actions">
+                {{ if dayCount }}
+                  <a href="/itineraries/{{ islug }}/day-1/">Day-by-day</a>
+                  <span aria-hidden="true">·</span>
+                  <a href="/itineraries/{{ islug }}/timetable/">Timetable</a>
+                {{ /if }}
+              </p>
+            </li>
+          {{ /for }}
+        </ul>
+      </section>
+    {{ /if }}
+
+    {{ if hub?.stopCount || hub?.references?.length || hub?.media?.length }}
+      <section class="destination-browse" aria-labelledby="dest-browse">
+        <h2 id="dest-browse">Browse</h2>
+        <ul class="destination-browse-grid">
+          {{ if hub.stopCount }}
+            <li>
+              <a class="destination-browse-card" href="/activities/?destination={{ hub.slug }}">
+                <span class="destination-browse-count">{{ hub.stopCount }}</span>
+                <span class="destination-browse-label">Things to do</span>
+                <span class="destination-browse-hint">Linked to {{ title }}</span>
+              </a>
+            </li>
+          {{ /if }}
+          {{ if hub.inCityCount }}
+            <li>
+              <a class="destination-browse-card" href="#hub-cat-in-city">
+                <span class="destination-browse-count">{{ hub.inCityCount }}</span>
+                <span class="destination-browse-label">In the city</span>
+                <span class="destination-browse-hint">Walkable &amp; in-town stops</span>
+              </a>
+            </li>
+          {{ /if }}
+          {{ if hub.dayTripCount }}
+            <li>
+              <a class="destination-browse-card" href="#hub-cat-day-trip">
+                <span class="destination-browse-count">{{ hub.dayTripCount }}</span>
+                <span class="destination-browse-label">Nearby &amp; day trips</span>
+                <span class="destination-browse-hint">Getaways from this base</span>
+              </a>
+            </li>
+          {{ /if }}
+          {{ if hub.references?.length }}
+            <li>
+              <a class="destination-browse-card" href="#hub-references">
+                <span class="destination-browse-count">{{ hub.references.length }}</span>
+                <span class="destination-browse-label">Guides</span>
+                <span class="destination-browse-hint">Food, tips, book-ahead</span>
+              </a>
+            </li>
+          {{ /if }}
+          {{ if hub.themes?.totalThemes }}
+            <li>
+              <a class="destination-browse-card" href="#hub-themes">
+                <span class="destination-browse-count">{{ hub.themes.totalThemes }}</span>
+                <span class="destination-browse-label">Themes</span>
+                <span class="destination-browse-hint">Hiking, food, creative…</span>
+              </a>
+            </li>
+          {{ /if }}
+          {{ if hub.media?.length }}
+            <li>
+              <a class="destination-browse-card" href="#hub-media">
+                <span class="destination-browse-count">{{ hub.media.length }}</span>
+                <span class="destination-browse-label">Photo spots</span>
+                <span class="destination-browse-hint">Most photogenic places</span>
+              </a>
+            </li>
+          {{ /if }}
+        </ul>
+      </section>
+    {{ /if }}
+
+    {{ if hub?.themes?.groups?.length }}
+      <section class="destination-hub-sections" id="hub-themes" aria-label="Themes">
+        <h2 class="destination-hub-heading">Themes</h2>
+        {{ for group of hub.themes.groups }}
+          <div class="destination-theme-group">
+            <h3 class="destination-theme-group-label">{{ group.label }}</h3>
+            <ul class="destination-theme-chips">
+              {{ for t of group.themes }}
+                <li>
+                  <a class="destination-theme-chip" href="{{ t.url }}">
+                    {{ t.label }}
+                    <span class="destination-hub-count">{{ t.count }}</span>
+                  </a>
+                </li>
+              {{ /for }}
+            </ul>
+          </div>
         {{ /for }}
-      </ol>
-    </nav>
+      </section>
     {{ /if }}
 
-    <div class="post-body body">
-      {{ content }}
-    </div>
-
-<h2>Map of Quito & Nearby</h2>
-<div id="map" class="h-96 rounded shadow"></div>
-<script>
-  window.places = [
-    // Destination itself
-    {{ if lat && lng }}
-    {
-      title: "{{ title }}",
-      url: "{{ url }}",
-      lat: {{ lat }},
-      lng: {{ lng }},
-      category: "destination",
-    },
+    {{ if hub?.categoryGroups?.length }}
+      <section class="destination-hub-sections" aria-label="Places by distance">
+        {{ for group of hub.categoryGroups }}
+          <div class="destination-hub-section" id="hub-cat-{{ group.key }}">
+            <h2 class="destination-hub-heading">
+              {{ group.label }}
+              <span class="destination-hub-count">{{ group.count }}</span>
+            </h2>
+            <ul class="destination-link-list">
+              {{ for item of group.items }}
+                <li>
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                  {{ if item.bucket_list }}
+                    <span class="destination-hub-tag">Bucket list</span>
+                  {{ /if }}
+                  {{ if item.visit_time }}
+                    <span class="destination-hub-meta">{{ item.visit_time }}</span>
+                  {{ /if }}
+                  {{ if item.travel_time }}
+                    <span class="destination-hub-meta">{{ item.travel_time }}</span>
+                  {{ /if }}
+                </li>
+              {{ /for }}
+            </ul>
+          </div>
+        {{ /for }}
+      </section>
     {{ /if }}
 
-    // Related places
-    {{ for place of related }}
-      {{ if place.lat && place.lng }}
-      {
-        title: "{{ place.title }}",
-        url: "{{ place.url }}",
-        lat: {{ place.lat }},
-        lng: {{ place.lng }},
-        category: "{{ place.travel_category || 'activity' }}",
-      },
-      {{ /if }}
-    {{ /for }}
-  ];
-</script>
+    {{ if hub?.references?.length }}
+      <section class="destination-hub-sections" id="hub-references" aria-label="Guides">
+        <h2 class="destination-hub-heading">Guides &amp; references</h2>
+        <ul class="destination-ref-grid">
+          {{ for ref of hub.references }}
+            <li class="destination-ref-card">
+              <a href="{{ ref.url }}">
+                <span class="destination-ref-section">{{ ref.label }}</span>
+                <span class="destination-ref-title">{{ ref.title }}</span>
+                {{ if ref.excerpt }}
+                  <span class="destination-ref-excerpt">{{ ref.excerpt }}</span>
+                {{ /if }}
+              </a>
+            </li>
+          {{ /for }}
+        </ul>
+      </section>
+    {{ /if }}
+
+    {{ if hub?.media?.length }}
+      <section class="destination-hub-sections" id="hub-media" aria-labelledby="hub-media-title">
+        <h2 class="destination-hub-heading" id="hub-media-title">Photo spots</h2>
+        <ul class="destination-link-list">
+          {{ for gal of hub.media }}
+            <li><a href="{{ gal.url }}">{{ gal.title }}</a></li>
+          {{ /for }}
+        </ul>
+      </section>
+    {{ /if }}
+
+    {{ set raw = content || "" }}
+    {{ set afterMore = raw.split(/<!--\s*more\s*-->/i) }}
+    {{ set guideRaw = afterMore.length > 1 ? afterMore[1] : "" }}
+
+    {{ if guideRaw.trim() }}
+      <section class="destination-guide" aria-labelledby="dest-guide-title">
+        <h2 id="dest-guide-title">Notes</h2>
+        <div class="post-body body">
+          {{ guideRaw |> md }}
+        </div>
+      </section>
+    {{ /if }}
+
+    <section class="destination-map-section" aria-labelledby="dest-map-title">
+      <h2 id="dest-map-title">Map{{ if title }} · {{ title }}{{ /if }}</h2>
+      {{ include "templates/eater-map.vto" {
+        items: hub.mapStops,
+        mapPlaces: hub.mapPlaces,
+        filterCats: hub.mapFilterCats,
+        filterKinds: hub.mapFilterKinds,
+        showFilters: true,
+        mapLabel: "Map of " + title,
+        emptyNote: "Add lat/lng on linked stops to populate this map."
+      } }}
+    </section>
 
     {{ if it.footnotes.length }}
     <aside role="note" class="footnotes">
@@ -123,28 +285,93 @@ bodyClass: body-post
     </aside>
     {{ /if }}
   </article>
-
-  <nav class="page-pagination pagination">
-    <ul>
-      {{- set previousPost = search.previousPage(url, "type=post") }}
-      {{- if previousPost }}
-      <li class="pagination-prev">
-        <a href="{{ previousPost.url }}" rel="prev">
-          <span>{{ i18n.nav.previous_post }}</span>
-          <strong>{{ previousPost.title }}</strong>
-        </a>
-      </li>
-      {{ /if }}
-
-      {{- set nextPost = search.nextPage(url, "type=post") }}
-      {{- if nextPost }}
-      <li class="pagination-next">
-        <a href="{{ nextPost.url }}" rel="next">
-          <span>{{ i18n.nav.next_post }}</span>
-          <strong>{{ nextPost.title }}</strong>
-        </a>
-      </li>
-      {{ /if }}
-    </ul>
-  </nav>
 </main>
+
+<script type="module">
+  import { initEaterMapChrome, initMap } from "/js/maps.js";
+  const places = {{ JSON.stringify(hub?.mapPlaces || []) }};
+  const eaterRoot = document.querySelector("[data-eater-map]");
+  if (eaterRoot && Array.isArray(places) && places.length) {
+    initEaterMapChrome(eaterRoot, places);
+  } else if (Array.isArray(places) && places.length) {
+    initMap(places);
+  }
+
+  const weekly = {{ JSON.stringify(hub?.weekly || null) }};
+  const todayRoot = document.querySelector("[data-hub-today]");
+  if (weekly?.byDay && todayRoot) {
+    const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const list = todayRoot.querySelector("[data-hub-today-list]");
+    const empty = todayRoot.querySelector("[data-hub-today-empty]");
+    const dateEl = todayRoot.querySelector("[data-hub-today-date]");
+    const chips = [...todayRoot.querySelectorAll("[data-day]")];
+    const titleEl = todayRoot.querySelector("#hub-today-title");
+
+    let selected = DAY_KEYS[new Date().getDay()];
+
+    function render(day) {
+      selected = day;
+      const items = weekly.byDay[day] || [];
+      const label = weekly.dayLabels?.[day] || day;
+      const isToday = day === DAY_KEYS[new Date().getDay()];
+
+      if (titleEl) {
+        titleEl.textContent = isToday
+          ? `Today near {{ title }}`
+          : `${label} near {{ title }}`;
+      }
+      if (dateEl) {
+        dateEl.textContent = isToday
+          ? `Based on your local day · ${label}`
+          : `Showing ${label}`;
+      }
+
+      chips.forEach((btn) => {
+        const on = btn.getAttribute("data-day") === day;
+        btn.classList.toggle("is-active", on);
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+
+      if (!list) return;
+      list.innerHTML = items.map((item) => {
+        const meta = [
+          item.time,
+          item.cadence === "monthly" ? "Monthly" : "",
+          item.notes,
+        ].filter(Boolean).join(" · ");
+        const sub = item.title !== item.stopTitle
+          ? `<span class="hub-today-stop">${escapeHtml(item.stopTitle)}</span>`
+          : "";
+        return `<li class="hub-today-item">
+          <a href="${escapeAttr(item.url)}">
+            <span class="hub-today-item-title">${escapeHtml(item.title)}</span>
+            ${sub}
+            ${meta ? `<span class="hub-today-item-meta">${escapeHtml(meta)}</span>` : ""}
+          </a>
+        </li>`;
+      }).join("");
+
+      if (empty) empty.hidden = items.length > 0;
+      list.hidden = items.length === 0;
+    }
+
+    function escapeHtml(s) {
+      return String(s || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function escapeAttr(s) {
+      return escapeHtml(s).replace(/'/g, "&#39;");
+    }
+
+    todayRoot.querySelector("[data-hub-today-days]")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-day]");
+      if (!btn) return;
+      render(btn.getAttribute("data-day"));
+    });
+
+    render(selected);
+  }
+</script>

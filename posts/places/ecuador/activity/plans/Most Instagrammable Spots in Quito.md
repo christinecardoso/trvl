@@ -1,7 +1,6 @@
 ---
-kind: media
 title: Most Instagrammable Spots in Quito
-destination_slugs: ["quito"]
-activity_slugs: [teleferiqo, historic-center]
-style: "influencer"
+layout: layouts/redirect.vto
+redirectTo: /places/ecuador/activity/quito-instagrammable-spots/
 ---
+Moved — see [[Quito Instagrammable Spots]].

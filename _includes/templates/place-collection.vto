@@ -1,0 +1,36 @@
+{{# Nested places inside a circuit / collection stop #}}
+{{ if places?.length }}
+  <div class="place-collection">
+    <h3 class="place-collection-heading">
+      {{ heading || "Places in this stop" }}
+      <span class="place-collection-count">{{ places.length }}</span>
+    </h3>
+    <ol class="place-collection-list">
+      {{ for place of places }}
+        {{ set placeKey = (place.name || place.title) |> slugify }}
+        <li
+          class="place-collection-item"
+          {{ if place.lat != null && place.lng != null && mapStopId }}
+            data-map-place-id="{{ mapStopId }}-{{ placeKey }}"
+          {{ /if }}
+        >
+          <div class="place-collection-main">
+            {{ if place.url }}
+              <a class="place-collection-name" href="{{ place.url }}">{{ place.name || place.title }}</a>
+            {{ else if place.slug }}
+              <a class="place-collection-name" href="/{{ place.slug }}/">{{ place.name || place.title }}</a>
+            {{ else }}
+              <span class="place-collection-name">{{ place.name || place.title }}</span>
+            {{ /if }}
+            {{ if place.type }}
+              <span class="place-collection-type">{{ place.type }}</span>
+            {{ /if }}
+          </div>
+          {{ if place.notes }}
+            <p class="place-collection-notes">{{ place.notes }}</p>
+          {{ /if }}
+        </li>
+      {{ /for }}
+    </ol>
+  </div>
+{{ /if }}

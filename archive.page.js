@@ -9,8 +9,8 @@ export default function* ({ search, paginate, i18n }) {
     // Show the first page in the menu
     if (data.pagination.page === 1) {
       data.menu = {
-        visible: true,
-        order: 1,
+        visible: false,
+        order: 9,
       };
     }
 

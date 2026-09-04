@@ -17,6 +17,7 @@ activities:
 related:
   - Baños de Agua Santa
   - Ruta de las Cascadas
+bucket_list: true
 ---
 The most famous stop on the **Ruta de las Cascadas**, this roaring waterfall drops through a gorge surrounded by lush jungle.  
 

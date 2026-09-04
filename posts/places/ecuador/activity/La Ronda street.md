@@ -1,6 +1,6 @@
 ---
 title: La Ronda street
-best_time: Evening
-visit_time: 1–2 hours
+layout: layouts/redirect.vto
+redirectTo: /places/ecuador/activity/la-ronda-street-stroll/
 ---
-Visit in the evening for music, food and atmosphere
+Merged into [[La Ronda Street Stroll]].

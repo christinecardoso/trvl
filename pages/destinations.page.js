@@ -1,11 +1,11 @@
-export const layout = "layouts/archive.vto";
+export const layout = "layouts/travel-archive.vto";
 
 export default function* ({ search, paginate }) {
   const destinations = search.pages("kind=destination isBase=true", "title=asc");
 
   for (const data of paginate(destinations, { size: 12, url })) {
     if (data.pagination.page === 1) {
-      data.menu = { visible: true, order: 0 };
+      data.menu = { visible: true, order: 2, title: "Destinations" };
     }
 
     yield {
@@ -13,7 +13,6 @@ export default function* ({ search, paginate }) {
       title: "Destinations",
       archiveType: "destination",
       search,
-
     };
   }
 }

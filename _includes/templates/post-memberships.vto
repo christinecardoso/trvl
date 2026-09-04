@@ -1,0 +1,23 @@
+{{# Links back to itineraries, country hubs, and collection pages #}}
+{{ if memberships?.length }}
+  <nav class="post-memberships" aria-label="Part of">
+    <p class="post-memberships-label">Part of</p>
+    <div class="post-memberships-groups">
+      {{ for group of memberships }}
+        <section class="post-memberships-group">
+          <h2 class="post-memberships-heading">{{ group.title }}</h2>
+          <ul class="post-memberships-list">
+            {{ for link of group.links }}
+              <li>
+                <a href="{{ link.url }}">{{ link.title }}</a>
+                {{ if link.meta }}
+                  <span class="post-memberships-meta">{{ link.meta }}</span>
+                {{ /if }}
+              </li>
+            {{ /for }}
+          </ul>
+        </section>
+      {{ /for }}
+    </div>
+  </nav>
+{{ /if }}

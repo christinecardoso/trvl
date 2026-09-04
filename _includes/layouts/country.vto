@@ -1,0 +1,104 @@
+---
+layout: layouts/base.vto
+bodyClass: body-country
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header travel-archive-header">
+    <p class="itin-breadcrumb">
+      <a href="/countries/">Countries</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ country }}</span>
+    </p>
+    <h1 class="page-title">{{ country }}</h1>
+    <p class="travel-archive-intro">
+      Itineraries, destinations, and bucket-list experiences for {{ country }}.
+    </p>
+    <p class="itin-overview-meta">
+      <span>{{ counts.itineraries }} itinerar{{ if counts.itineraries === 1 }}y{{ else }}ies{{ /if }}</span>
+      <span>{{ counts.destinations }} destination{{ if counts.destinations !== 1 }}s{{ /if }}</span>
+      <span>{{ counts.activities }} experiences</span>
+    </p>
+  </header>
+
+  {{ if itineraries?.length }}
+    <section class="home-section" aria-labelledby="country-itineraries">
+      <div class="home-section-head">
+        <h2 id="country-itineraries">Itineraries</h2>
+        <a href="/itineraries/">All itineraries</a>
+      </div>
+      <ul class="itin-archive-grid">
+        {{ for itin of itineraries }}
+          {{ set slug = itin.itinerary_slug }}
+          {{ if !slug }}{{ set slug = itin.title |> slugify }}{{ /if }}
+          {{ set dayCount = Number(itin.days) || 0 }}
+          <li class="itin-card">
+            <a class="itin-card-link" href="{{ itin.url }}">
+              <span class="itin-card-eyebrow">Itinerary</span>
+              <h3 class="itin-card-title">{{ itin.title }}</h3>
+              <p class="itin-card-meta">
+                {{ if dayCount }}<span>{{ dayCount }} day{{ if dayCount !== 1 }}s{{ /if }}</span>{{ /if }}
+              </p>
+            </a>
+            <p class="itin-card-actions">
+              {{ if dayCount }}
+                <a href="/itineraries/{{ slug }}/day-1/">Day-by-day</a>
+                <span aria-hidden="true">·</span>
+                <a href="/itineraries/{{ slug }}/timetable/">Timetable</a>
+              {{ /if }}
+            </p>
+          </li>
+        {{ /for }}
+      </ul>
+    </section>
+  {{ /if }}
+
+  {{ if destinations?.length }}
+    <section class="home-section" aria-labelledby="country-destinations">
+      <div class="home-section-head">
+        <h2 id="country-destinations">Destinations</h2>
+        <a href="/destinations/">All destinations</a>
+      </div>
+      <ul class="dest-grid">
+        {{ for dest of destinations }}
+          <li class="dest-card">
+            <a href="{{ dest.url }}">
+              <span class="itin-card-eyebrow">{{ if dest.isBase }}Base{{ else }}Place{{ /if }}</span>
+              <h3 class="itin-card-title">{{ dest.title }}</h3>
+              <p class="itin-card-meta">
+                {{ if dest.region }}<span>{{ dest.region }}</span>{{ /if }}
+                {{ if dest.travel_category }}<span>{{ dest.travel_category }}</span>{{ /if }}
+              </p>
+            </a>
+          </li>
+        {{ /for }}
+      </ul>
+    </section>
+  {{ /if }}
+
+  {{ if activities?.length }}
+    <section class="home-section" aria-labelledby="country-activities">
+      <div class="home-section-head">
+        <h2 id="country-activities">Experiences</h2>
+        <a href="/bucket-list/">Bucket list</a>
+      </div>
+      <ul class="bucket-preview">
+        {{ for item of activities.slice(0, 12) }}
+          <li>
+            <a href="{{ item.url }}">
+              <span class="bucket-preview-title">{{ item.title }}</span>
+              {{ if item.travel_category }}
+                <span class="bucket-preview-meta">{{ item.travel_category }}</span>
+              {{ else if item.tags?.length }}
+                <span class="bucket-preview-meta">{{ item.tags[0] }}</span>
+              {{ /if }}
+            </a>
+          </li>
+        {{ /for }}
+      </ul>
+      {{ if activities.length > 12 }}
+        <p class="itin-card-actions"><a href="/activities/">Browse all things to do →</a></p>
+      {{ /if }}
+    </section>
+  {{ /if }}
+</main>

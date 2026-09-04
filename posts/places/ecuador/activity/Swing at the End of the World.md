@@ -18,6 +18,7 @@ related:
   - Baños de Agua Santa
 travel_time: 3.5 hrs
 travel_direction: south
+bucket_list: true
 ---
 Located at **Casa del Árbol**, this mountaintop swing sends you soaring over the valley with panoramic views of Tungurahua volcano.  
 

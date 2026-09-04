@@ -5,6 +5,7 @@ itinerary_day:
 itinerary_slug: ecuador-itinerary
 order: "2"
 visit_time: 1 hour
+travel_category: In city
 ---
 
 The “Central Park of Quito,” with botanical gardens, orchid house, and the interactive Yaku Water Museum.

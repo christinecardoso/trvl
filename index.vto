@@ -2,55 +2,91 @@
 layout: layouts/base.vto
 bodyClass: body-home
 title: Home
-home:
-  welcome: PRPL TRVL
 ---
 
-<header class="page-header center">
-  <h1 class="page-title">{{ home.welcome }}</h1>
-  <div class="page-subtitle">{{ home.intro |> md }}</div>
-</header>
+<section class="home-hero">
+  <div class="home-hero-inner">
+    <p class="home-hero-brand">{{ metas.site }}</p>
+    <h1 class="home-hero-title">Plan the trip.<br>Build the list.</h1>
+    <p class="home-hero-lede">
+      Day-by-day itineraries, destinations worth the flight, and a living bucket list of places and experiences to chase next.
+    </p>
+    <div class="home-hero-actions">
+      <a class="button button-primary" href="/itineraries/">Browse itineraries</a>
+      <a class="button button-ghost" href="/bucket-list/">Open bucket list</a>
+    </div>
+  </div>
+</section>
 
 <main class="{{ it.bodyClass }}">
-
-    {{ for prod of search.pages("type=product", "date=desc", 3) }}
-    {{ prod.title }}
-
-    {{ /for }}
-
-
-  <section class="postList">
-    <br>
-    {{ for post of search.pages("type=post", "date=desc", 3) }}
-    <article class="post">
-      <header class="post-header">
-        <h2 class="post-title">
-          <a href="{{ post.url }}" {{ if post.url == url }} aria-current="page"{{ /if }}>
-            {{ post.title || post.url }}
+  <section class="home-section" aria-labelledby="home-itineraries">
+    <div class="home-section-head">
+      <h2 id="home-itineraries">Itineraries</h2>
+      <a href="/itineraries/">View all</a>
+    </div>
+    <ul class="itin-archive-grid home-grid">
+      {{ for itin of search.pages("type=itinerary", "title=asc", 4) }}
+        {{ set slug = itin.itinerary_slug }}
+        {{ if !slug }}{{ set slug = itin.title |> slugify }}{{ /if }}
+        {{ set dayCount = Number(itin.days) || 0 }}
+        <li class="itin-card">
+          <a class="itin-card-link" href="{{ itin.url }}">
+            <span class="itin-card-eyebrow">Itinerary</span>
+            <h3 class="itin-card-title">{{ itin.title }}</h3>
+            <p class="itin-card-meta">
+              {{ if dayCount }}<span>{{ dayCount }} day{{ if dayCount !== 1 }}s{{ /if }}</span>{{ /if }}
+            </p>
           </a>
-        </h2>
-
-        {{ include "templates/post-details.vto" {
-          date: post.date,
-          tags: post.tags,
-          author: post.author,
-          readingInfo: post.readingInfo
-          } }}
-      </header>
-
-      <div class="post-excerpt body">
-        {{ post.excerpt |> md }}
-      </div>
-
-      <p><a href="{{ post.url }}" class="post-link">
-        {{ i18n.nav.continue_reading }}
-      </a></p>
-    </article>
-  {{ /for }}
+          {{ if dayCount }}
+            <p class="itin-card-actions">
+              <a href="/itineraries/{{ slug }}/day-1/">Day-by-day</a>
+              <span aria-hidden="true">·</span>
+              <a href="/itineraries/{{ slug }}/timetable/">Timetable</a>
+            </p>
+          {{ /if }}
+        </li>
+      {{ /for }}
+    </ul>
   </section>
 
-  <hr>
+  <section class="home-section" aria-labelledby="home-destinations">
+    <div class="home-section-head">
+      <h2 id="home-destinations">Destinations</h2>
+      <a href="/destinations/">View all</a>
+    </div>
+    <ul class="dest-grid home-grid">
+      {{ for dest of search.pages("kind=destination isBase=true", "title=asc", 4) }}
+        <li class="dest-card">
+          <a href="{{ dest.url }}">
+            <span class="itin-card-eyebrow">{{ dest.country || "Destination" }}</span>
+            <h3 class="itin-card-title">{{ dest.title }}</h3>
+            {{ if dest.region }}
+              <p class="itin-card-meta"><span>{{ dest.region }}</span></p>
+            {{ /if }}
+          </a>
+        </li>
+      {{ /for }}
+    </ul>
+  </section>
 
-  <p>{{ i18n.nav.archive }}</p>
-  <div class="search" id="search"></div>
+  <section class="home-section home-bucket" aria-labelledby="home-bucket">
+    <div class="home-section-head">
+      <h2 id="home-bucket">From the bucket list</h2>
+      <a href="/bucket-list/">See the list</a>
+    </div>
+    <ul class="bucket-preview">
+      {{ for item of search.pages("kind=activity", "title=asc", 6) }}
+        <li>
+          <a href="{{ item.url }}">
+            <span class="bucket-preview-title">{{ item.title }}</span>
+            {{ if item.travel_category }}
+              <span class="bucket-preview-meta">{{ item.travel_category }}</span>
+            {{ else if item.tags?.length }}
+              <span class="bucket-preview-meta">{{ item.tags[0] }}</span>
+            {{ /if }}
+          </a>
+        </li>
+      {{ /for }}
+    </ul>
+  </section>
 </main>

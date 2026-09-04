@@ -15,6 +15,7 @@ places:
   - name: "Panoramic Tiny House + Sauna"
     lat: -0.196408
     lng: -78.306901
+travel_category: Nearby
 ---
 -0.106594,-78.290146
 – 15-min walk to [[El Quinche Sanctuary]]  

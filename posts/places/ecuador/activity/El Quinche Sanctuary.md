@@ -1,7 +1,8 @@
 ---
 title: El Quinche Sanctuary
+kind: activity
 travel_category: Walkable
-base: quito
+bucket_list: true
 related:
   - Airbnb
 ---

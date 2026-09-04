@@ -1,0 +1,26 @@
+{{ if weekly?.length }}
+  <aside class="stop-weekly" aria-label="Weekly schedule">
+    <h3 class="stop-weekly-heading">Weekly</h3>
+    <ul class="stop-weekly-list">
+      {{ for slot of weekly }}
+        <li class="stop-weekly-item">
+          {{ if slot.dayLabels?.length }}
+            <span class="stop-weekly-days">{{ slot.dayLabels.join(", ") }}</span>
+          {{ /if }}
+          {{ if slot.time }}
+            <time class="stop-weekly-time">{{ slot.time }}</time>
+          {{ /if }}
+          {{ if slot.title }}
+            <span class="stop-weekly-title">{{ slot.title }}</span>
+          {{ /if }}
+          {{ if slot.cadence === "monthly" }}
+            <span class="stop-weekly-cadence">Monthly</span>
+          {{ /if }}
+          {{ if slot.notes }}
+            <span class="stop-weekly-notes">{{ slot.notes }}</span>
+          {{ /if }}
+        </li>
+      {{ /for }}
+    </ul>
+  </aside>
+{{ /if }}

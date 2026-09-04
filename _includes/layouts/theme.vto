@@ -1,0 +1,67 @@
+---
+layout: layouts/base.vto
+bodyClass: body-theme
+---
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<main class="{{ it.bodyClass }}">
+  <article class="theme-page theme-page--map">
+    <header class="theme-header">
+      <p class="itin-breadcrumb">
+        <a href="/destinations/">Destinations</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ hub_url }}">{{ hub_title }}</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ theme_label }}</span>
+      </p>
+      <p class="theme-eyebrow">
+        {{ for g of theme_groups || [] }}
+          <span class="badge">{{ g.label }}</span>
+        {{ /for }}
+        Theme
+      </p>
+      <h1 class="page-title">{{ theme_label }} near {{ hub_title }}</h1>
+      <p class="theme-subtitle">
+        {{ count }} stop{{ if count !== 1 }}s{{ /if }} to plan from {{ hub_title }}
+      </p>
+      {{ include "templates/trip-share.vto" { gmapsUrl: null } }}
+    </header>
+
+    {{ if collection?.excerpt || collection?.content }}
+      <section class="theme-collection-lede body" aria-label="Editor notes">
+        {{ if collection.excerpt }}
+          <p>{{ collection.excerpt }}</p>
+        {{ else }}
+          {{ collection.content |> md }}
+        {{ /if }}
+      </section>
+    {{ /if }}
+
+    {{ include "templates/eater-map.vto" {
+      items: items,
+      mapPlaces: mapPlaces,
+      filterCats: filterCats,
+      filterKinds: filterKinds,
+      showFilters: true,
+      mapLabel: theme_label + " near " + hub_title,
+      emptyNote: "No stops tagged with this theme have map coordinates yet."
+    } }}
+
+    <p class="theme-footer-cta">
+      <a href="{{ hub_url }}">← Back to {{ hub_title }}</a>
+      <span aria-hidden="true">·</span>
+      <a href="/bucket-list/?theme={{ theme }}">See on bucket list</a>
+    </p>
+  </article>
+</main>
+
+{{ if mapPlaces?.length }}
+<script type="module">
+  import { initEaterMapChrome } from "/js/maps.js";
+  const root = document.querySelector("[data-eater-map]");
+  const places = {{ JSON.stringify(mapPlaces) }};
+  if (root && Array.isArray(places) && places.length) {
+    initEaterMapChrome(root, places);
+  }
+</script>
+{{ /if }}

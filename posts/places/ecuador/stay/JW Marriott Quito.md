@@ -8,4 +8,5 @@ itinerary_days:
 kind: lodging
 lat: -0.197218
 lng: -78.488928
+travel_category: In city
 ---

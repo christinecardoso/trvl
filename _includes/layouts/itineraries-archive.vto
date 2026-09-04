@@ -1,0 +1,46 @@
+---
+layout: layouts/base.vto
+bodyClass: body-tag
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header travel-archive-header">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="travel-archive-intro">Day-by-day plans you can follow, remix, or turn into your next trip.</p>
+  </header>
+
+  <section class="itin-archive" aria-label="Itineraries">
+    {{ if results?.length }}
+      <ul class="itin-archive-grid">
+        {{ for itin of results }}
+          {{ set slug = itin.itinerary_slug }}
+          {{ if !slug }}{{ set slug = itin.title |> slugify }}{{ /if }}
+          {{ set dayCount = Number(itin.days) || 0 }}
+          <li class="itin-card">
+            <a class="itin-card-link" href="{{ itin.url }}">
+              <span class="itin-card-eyebrow">Itinerary</span>
+              <h2 class="itin-card-title">{{ itin.title }}</h2>
+              <p class="itin-card-meta">
+                {{ if dayCount }}<span>{{ dayCount }} day{{ if dayCount !== 1 }}s{{ /if }}</span>{{ /if }}
+                {{ if itin.start_date }}
+                  <span>{{ itin.start_date |> date("HUMAN_DATE") }}</span>
+                {{ /if }}
+              </p>
+            </a>
+            {{ if dayCount }}
+            <p class="itin-card-actions">
+              {{ if dayCount }}
+                <a href="/itineraries/{{ slug }}/day-1/">Day-by-day</a>
+                <span aria-hidden="true">·</span>
+                <a href="/itineraries/{{ slug }}/timetable/">Timetable</a>
+              {{ /if }}
+            </p>
+            {{ /if }}
+          </li>
+        {{ /for }}
+      </ul>
+    {{ else }}
+      <p class="itin-empty">No itineraries yet.</p>
+    {{ /if }}
+  </section>
+</main>

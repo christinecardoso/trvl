@@ -32,6 +32,8 @@ seo:
 lat: -0.135
 lng: -78.887
 travel_time: 3 hrs
+travel_category: Overnight Trip
+bucket_list: true
 ---
 
 Luxury eco-lodge in the Chocó cloud forest, known for incredible biodiversity, aerial gondola rides, and guided nature experiences

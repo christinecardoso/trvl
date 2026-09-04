@@ -1,14 +1,23 @@
 ---
 title: Mercado Central, Quito
+kind: eats
+visit_style: Lunch
+flexible: true
 itinerary_day:
   - "2"
 itinerary_slug: ecuador-itinerary
-order: "2"
+order: "3"
 visit_time: 1-1.25 hours
+travel_category: In city
+options:
+  - title: Mercado Central — hornado & locro
+    notes: Slow-roasted pork with mote, potato soup, jugo de mora
+  - title: San Ignacio Cafetería
+    notes: Quieter sit-down alternative nearby
 ---
-## Schedule
-Explore Mercado Central or Iñaquito for local food and daily life
+Local flavors at Mercado Central — hornado, locro de papa, jugo de mora. Carry cash.
+<!--more-->
 
-**Lunch** — Immerse in local flavors at **Mercado Central, Quito**: **hornado** (slow-roasted pork with mote), **locro de papa** (potato soup), **jugo de mora** (blackberry juice). *Quieter alt:* **San Ignacio Cafetería**.
+## Overview
 
-*Tip: Carry cash for markets and small cafés.*
+Immerse in daily Quito food culture. Mercado Central is lively; San Ignacio works if you want a calmer plate. Iñaquito is another market option if you’re north of Centro.

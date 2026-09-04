@@ -11,6 +11,7 @@
 @import "css/post-list.css";
 @import "css/post.css";
 @import "css/archive.css";
+@import "css/travel.css";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @custom-variant light (&:where([data-theme=light], [data-theme=light] *));

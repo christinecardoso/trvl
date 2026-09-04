@@ -8,4 +8,5 @@ visit_time: 1 hour
 order: "3"
 lat: -0.1659005
 lng: -78.5578442
+travel_category: In city
 ---

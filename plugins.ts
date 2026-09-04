@@ -12,6 +12,20 @@ import slugify from "lume/plugins/slugify_urls.ts";
 import transformImages from "lume/plugins/transform_images.ts";
 
 import { merge } from "lume/core/utils/object.ts";
+import {
+  buildPostMemberships,
+  expandDays,
+  enrichScheduleSlots,
+  normalizePlaces,
+  normalizeOptions,
+  resolveOptionUrls,
+  destinationHubUrl,
+  itineraryOverviewUrl,
+  legacyUrlFromSrc,
+  buildDestinationHub,
+} from "./scripts/itinerary_helpers.js";
+import { normalizeThemes } from "./scripts/themes.js";
+import { normalizeWeekly } from "./scripts/weekly.js";
 
 
 import "lume/types.ts";
@@ -83,12 +97,15 @@ export const defaults: Options = {
 /** Configure the site */
 export default function (userOptions?: Options) {
   const options = merge(defaults, userOptions);
+  const canonicalRedirects: { from: string; to: string }[] = [];
 
   return (site: Lume.Site) => {
     site.data("colorscheme", options.colors)
+    site.data("canonicalRedirects", canonicalRedirects)
     .use(tailwindcss(/* Options */))
     .add("style.css") //Add the entry point
     .add("logo.png") //Add the entry point
+    .add("js")
     .use(wikilinks())
     .use(transformImages({
       // Only process raster images; leave SVGs alone so svg2png isn't invoked
@@ -204,6 +221,92 @@ site.process([".html"], (pages) => {
           page.data.outgoing_links = uniqueLinks;
         } else {
           page.data.outgoing_links = [];
+        }
+
+        const kind = String(page.data.kind || "").toLowerCase();
+        const pageType = String(page.data.type || "").toLowerCase();
+        const title = page.data.title as string | undefined;
+        const srcPath = page.src?.path;
+
+        page.data.themes = normalizeThemes(
+          page.data.themes,
+          page.data.tags as string[] | undefined,
+        );
+
+        if (page.data.weekly) {
+          page.data.weekly = normalizeWeekly(page.data.weekly);
+        }
+
+        if (kind === "destination" && page.data.isBase) {
+          const legacy = legacyUrlFromSrc(srcPath, title);
+          const canonical = destinationHubUrl(page.data);
+          if (legacy && legacy !== canonical) {
+            canonicalRedirects.push({ from: legacy, to: canonical });
+          }
+          page.data.url = canonical;
+        } else if (pageType === "itinerary" && page.data.itinerary_slug) {
+          const legacy = legacyUrlFromSrc(srcPath, title);
+          const canonical = itineraryOverviewUrl(page.data);
+          if (legacy && legacy !== canonical) {
+            canonicalRedirects.push({ from: legacy, to: canonical });
+          }
+          page.data.url = canonical;
+        }
+
+        const redirectTo = page.data.redirectTo || page.data.redirect_to;
+        if (redirectTo) {
+          page.data.redirectTo = redirectTo;
+          page.data.extra_head = [
+            `<meta http-equiv="refresh" content="0; url=${redirectTo}">`,
+            `<link rel="canonical" href="${redirectTo}">`,
+          ];
+        }
+      }
+
+      const snapshot = pages.map((p) => ({
+        ...p.data,
+        url: p.data.url,
+      }));
+      for (const page of pages) {
+        page.data.memberships = buildPostMemberships(
+          { ...page.data, url: page.data.url },
+          snapshot,
+        );
+
+        if (page.data.isBase && String(page.data.kind || "").toLowerCase() === "destination") {
+          page.data.hub = buildDestinationHub(
+            { ...page.data, url: page.data.url },
+            snapshot,
+          );
+        }
+
+        const days = expandDays(page.data);
+        const itinSlug = page.data.itinerary_slug as string | undefined;
+        if (itinSlug && days.length) {
+          page.data.primary_day_url = `/itineraries/${itinSlug}/day-${days[0]}/`;
+          page.data.primary_day_num = days[0];
+        }
+
+        const hasSchedule = Array.isArray(page.data.schedule) &&
+          page.data.schedule.length > 0;
+        if (Array.isArray(page.data.options) || page.data.alternatives || page.data.choices) {
+          page.data.options = resolveOptionUrls(
+            normalizeOptions(page.data),
+            snapshot,
+          );
+        }
+        if (hasSchedule && itinSlug && days.length) {
+          page.data.is_itinerary_day_plan = true;
+          page.data.places = normalizePlaces(page.data.places);
+          page.data.schedule = enrichScheduleSlots(
+            { ...page.data, url: page.data.url },
+            snapshot,
+          );
+        } else if (hasSchedule) {
+          page.data.schedule = enrichScheduleSlots(
+            { ...page.data, url: page.data.url },
+            snapshot,
+          );
         }
       }
     });

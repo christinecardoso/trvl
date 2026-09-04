@@ -1,0 +1,197 @@
+---
+layout: layouts/base.vto
+bodyClass: body-bucket
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header travel-archive-header">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="travel-archive-intro">
+      Places and experiences to chase — filter by adventure, creative, food, and more, then fold picks into an itinerary.
+    </p>
+  </header>
+
+  <div class="bucket-stats" aria-label="List summary">
+    <p><strong>{{ activities?.length || 0 }}</strong> experiences</p>
+    <p><strong>{{ destinations?.length || 0 }}</strong> destinations</p>
+  </div>
+
+  <div class="bucket-filters" data-bucket-filters>
+    {{ if themeModel?.groupChips?.length }}
+      <div class="activity-filter-group" role="group" aria-label="Theme group">
+        <span class="activity-filter-label">Group</span>
+        <button type="button" class="activity-filter-chip is-active" data-filter-group="all">All</button>
+        {{ for g of themeModel.groupChips }}
+          <button type="button" class="activity-filter-chip" data-filter-group="{{ g.id }}">
+            {{ g.label }} <span class="activity-filter-n">{{ g.count }}</span>
+          </button>
+        {{ /for }}
+      </div>
+    {{ /if }}
+
+    {{ if themeModel?.leaves?.length }}
+      <div class="activity-filter-group" role="group" aria-label="Theme">
+        <span class="activity-filter-label">Theme</span>
+        <button type="button" class="activity-filter-chip is-active" data-filter-theme="all">All</button>
+        {{ for leaf of themeModel.leaves }}
+          <button type="button" class="activity-filter-chip" data-filter-theme="{{ leaf.theme }}">
+            {{ leaf.label }} <span class="activity-filter-n">{{ leaf.count }}</span>
+          </button>
+        {{ /for }}
+      </div>
+    {{ /if }}
+  </div>
+
+  <p class="activity-filter-status" data-filter-status hidden></p>
+
+  {{ for group of themeModel?.groups || [] }}
+    <section
+      class="bucket-group"
+      data-bucket-group="{{ group.id }}"
+      aria-labelledby="bucket-theme-{{ group.id }}"
+    >
+      <h2 id="bucket-theme-{{ group.id }}">{{ group.label }}</h2>
+      {{ for leaf of group.themes }}
+        <div class="bucket-theme-block" data-bucket-theme="{{ leaf.theme }}">
+          <h3 class="bucket-theme-heading">
+            {{ leaf.label }}
+            <span class="destination-hub-count">{{ leaf.count }}</span>
+          </h3>
+          <ul class="bucket-list">
+            {{ for item of leaf.items }}
+              <li
+                class="bucket-item"
+                data-themes="{{ item.themes?.join(' ') || '' }}"
+                data-groups="{{ group.id }}"
+              >
+                <a href="{{ item.url }}">
+                  <span class="bucket-item-kind">{{ item.kind || "place" }}</span>
+                  <span class="bucket-item-title">{{ item.title }}</span>
+                  {{ if item.destination_slug || item.hub }}
+                    <span class="bucket-item-meta">{{ item.destination_slug || item.hub }}</span>
+                  {{ else if item.travel_category }}
+                    <span class="bucket-item-meta">{{ item.travel_category }}</span>
+                  {{ /if }}
+                </a>
+              </li>
+            {{ /for }}
+          </ul>
+        </div>
+      {{ /for }}
+    </section>
+  {{ /for }}
+
+  {{ if themeModel?.unthemed?.length }}
+    <section class="bucket-group" data-bucket-group="unthemed" aria-labelledby="bucket-unthemed">
+      <h2 id="bucket-unthemed">Unthemed</h2>
+      <ul class="bucket-list">
+        {{ for item of themeModel.unthemed }}
+          <li class="bucket-item" data-themes="" data-groups="unthemed">
+            <a href="{{ item.url }}">
+              <span class="bucket-item-kind">{{ item.kind || "place" }}</span>
+              <span class="bucket-item-title">{{ item.title }}</span>
+              {{ if item.country }}
+                <span class="bucket-item-meta">{{ item.country }}</span>
+              {{ /if }}
+            </a>
+          </li>
+        {{ /for }}
+      </ul>
+    </section>
+  {{ /if }}
+
+  <p class="itin-empty" data-filter-empty hidden>No bucket items match these filters.</p>
+
+  <p class="bucket-footer-cta">
+    Ready to sequence a trip? <a href="/itineraries/">Browse itineraries</a>
+    or explore <a href="/destinations/">destinations</a>.
+  </p>
+</main>
+
+<script type="module">
+  const root = document.querySelector("[data-bucket-filters]");
+  if (!root) throw new Error("missing filters");
+
+  const status = document.querySelector("[data-filter-status]");
+  const empty = document.querySelector("[data-filter-empty]");
+  const themeBlocks = [...document.querySelectorAll("[data-bucket-theme]")];
+  const groups = [...document.querySelectorAll("[data-bucket-group]")];
+  const items = [...document.querySelectorAll(".bucket-item")];
+
+  let group = "all";
+  let theme = "all";
+
+  const params = new URLSearchParams(location.search);
+  if (params.get("group")) group = params.get("group");
+  if (params.get("theme")) theme = params.get("theme");
+
+  function setChip(attr, value) {
+    root.querySelectorAll(`[${attr}]`).forEach((btn) => {
+      btn.classList.toggle("is-active", btn.getAttribute(attr) === value);
+    });
+  }
+
+  function apply() {
+    setChip("data-filter-group", group);
+    setChip("data-filter-theme", theme);
+
+    let visible = 0;
+    for (const item of items) {
+      const themes = (item.dataset.themes || "").split(/\s+/).filter(Boolean);
+      const itemGroups = (item.dataset.groups || "").split(/\s+/).filter(Boolean);
+      const okGroup = group === "all" || itemGroups.includes(group);
+      const okTheme = theme === "all" || themes.includes(theme);
+      const show = okGroup && okTheme;
+      item.hidden = !show;
+      if (show) visible++;
+    }
+
+    for (const block of themeBlocks) {
+      const blockTheme = block.getAttribute("data-bucket-theme");
+      const any = [...block.querySelectorAll(".bucket-item")].some((li) => !li.hidden);
+      const okTheme = theme === "all" || blockTheme === theme;
+      block.hidden = !any || !okTheme;
+    }
+
+    for (const section of groups) {
+      const gid = section.getAttribute("data-bucket-group");
+      const okGroup = group === "all" || gid === group || (group === "all" && gid === "unthemed");
+      const any = [...section.querySelectorAll(".bucket-item")].some((li) => !li.hidden);
+      section.hidden = !any || (group !== "all" && gid !== group);
+      if (gid === "unthemed" && theme !== "all") section.hidden = true;
+      if (gid === "unthemed" && group !== "all" && group !== "unthemed") section.hidden = true;
+    }
+
+    if (status) {
+      const parts = [];
+      if (group !== "all") parts.push(group);
+      if (theme !== "all") parts.push(theme);
+      status.hidden = parts.length === 0;
+      status.textContent = parts.length
+        ? `Showing ${visible} · ${parts.join(" / ")}`
+        : "";
+    }
+    if (empty) empty.hidden = visible > 0;
+
+    const url = new URL(location.href);
+    if (group === "all") url.searchParams.delete("group");
+    else url.searchParams.set("group", group);
+    if (theme === "all") url.searchParams.delete("theme");
+    else url.searchParams.set("theme", theme);
+    history.replaceState(null, "", url);
+  }
+
+  root.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-filter-group], [data-filter-theme]");
+    if (!btn) return;
+    if (btn.hasAttribute("data-filter-group")) {
+      group = btn.getAttribute("data-filter-group");
+    }
+    if (btn.hasAttribute("data-filter-theme")) {
+      theme = btn.getAttribute("data-filter-theme");
+    }
+    apply();
+  });
+
+  apply();
+</script>

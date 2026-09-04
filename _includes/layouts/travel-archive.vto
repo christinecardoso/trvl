@@ -1,0 +1,56 @@
+---
+layout: layouts/base.vto
+bodyClass: body-tag
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header travel-archive-header">
+    <h1 class="page-title">{{ title }}</h1>
+    {{ if archiveType === "destination" }}
+      <p class="travel-archive-intro">Base cities and regions. For a full country hub with itineraries, start at <a href="/countries/">Countries</a>.</p>
+    {{ else if archiveType === "activity" }}
+      <p class="travel-archive-intro">Experiences to add to an itinerary or your bucket list.</p>
+    {{ /if }}
+  </header>
+
+  <section class="travel-archive" aria-label="{{ title }}">
+    {{ if results?.length }}
+      <ul class="dest-grid">
+        {{ for page of results }}
+          <li class="dest-card">
+            <a href="{{ page.url }}">
+              <span class="itin-card-eyebrow">
+                {{ page.country || page.kind || archiveType || "Place" }}
+              </span>
+              <h2 class="itin-card-title">{{ page.title }}</h2>
+              <p class="itin-card-meta">
+                {{ if page.region }}<span>{{ page.region }}</span>{{ /if }}
+                {{ if page.travel_category }}<span>{{ page.travel_category }}</span>{{ /if }}
+                {{ if page.category }}<span>{{ page.category }}</span>{{ /if }}
+              </p>
+              {{ if archiveType === "destination" && page.excerpt }}
+                <p class="dest-card-lede">{{ page.excerpt }}</p>
+              {{ /if }}
+              {{ if page.tags?.length }}
+                <p class="dest-card-tags">
+                  {{ for tag of page.tags.slice(0, 3) }}
+                    <span class="badge">{{ tag }}</span>
+                  {{ /for }}
+                </p>
+              {{ /if }}
+            </a>
+          </li>
+        {{ /for }}
+      </ul>
+    {{ else }}
+      <p class="itin-empty">Nothing here yet.</p>
+    {{ /if }}
+  </section>
+
+  {{ include "templates/pagination.vto" }}
+
+  <hr>
+
+  <p class="archive-search">{{ i18n.nav.archive_search }}</p>
+  <div class="search" id="search"></div>
+</main>

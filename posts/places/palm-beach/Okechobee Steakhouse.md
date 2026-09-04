@@ -1,6 +1,12 @@
 ---
 title: Okechobee Steakhouse
-destination_slug: palm-beach
+kind: eats
+bucket_list: true
+travel_category: In city
+visit_time: 2 hrs
+themes: [food]
+theme_excerpts:
+  food: "VIP birthday sirloin tradition in West Palm — join rewards and bring ID on the day."
 ---
 If you're eyeing **Okeechobee Steakhouse** in West Palm Beach for a birthday celebration, you’re in for something truly special. Here's what makes it stand out:
 

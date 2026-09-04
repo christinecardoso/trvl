@@ -1,72 +1,221 @@
 ---
 layout: layouts/base.vto
+bodyClass: body-itinerary-day
 ---
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-{{ set it_slug = itinerary_title |> slugify }}
+{{ set it_slug = itinerary_slug }}
+{{ if !it_slug }}{{ set it_slug = itinerary_title |> slugify }}{{ /if }}
 
-<main class="container mx-auto px-4 py-8">
-  <header class="mb-6">
-    <a class="text-sm underline" href="/itineraries/">← All Itineraries</a>
-    <h1 class="text-3xl font-bold mt-1">{{ itinerary_title }} — Day {{ day_num }}</h1>
+<main class="{{ it.bodyClass }}">
+  <header class="itin-day-header">
+    <p class="itin-breadcrumb">
+      <a href="/itineraries/">Itineraries</a>
+      <span aria-hidden="true">/</span>
+      {{ if country_url }}
+        <a href="{{ country_url }}">{{ country }}</a>
+        <span aria-hidden="true">/</span>
+      {{ /if }}
+      <a href="{{ itinerary_url || '/itineraries/' }}">{{ itinerary_title }}</a>
+      <span aria-hidden="true">/</span>
+      <span>Day {{ day_num }}</span>
+    </p>
+
+    <div class="itin-day-title-row">
+      <div>
+        <h1 class="page-title">Day {{ day_num }} of {{ days_count }}</h1>
+        <p class="itin-day-subtitle">{{ itinerary_title }}</p>
+      </div>
+      {{ include "templates/trip-share.vto" { gmapsUrl: gmaps_url } }}
+    </div>
 
     {{ if start_date }}
       {{ set y = start_date.getUTCFullYear() }}
       {{ set m = start_date.getUTCMonth() }}
       {{ set d = start_date.getUTCDate() }}
       {{ set thisDate = new Date(Date.UTC(y, m, d + (day_num - 1))) }}
-      {{ set niceDate = thisDate.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }) }}
-      <p class="text-zinc-600">{{ niceDate }}</p>
+      {{ set niceDate = thisDate.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "long", month: "long", day: "numeric" }) }}
+      <p class="itin-date">{{ niceDate }}</p>
     {{ /if }}
 
-    <nav class="mt-2 flex gap-3">
-      {{ if prev_day_url }}<a class="underline" href="{{ prev_day_url }}">← Previous</a>{{ /if }}
-      {{ if next_day_url }}<a class="underline" href="{{ next_day_url }}">Next →</a>{{ /if }}
+    <nav class="itin-view-switch" aria-label="Itinerary views">
+      <a href="{{ itinerary_url }}">Overview</a>
+      <a href="/itineraries/{{ it_slug }}/day-{{ day_num }}/" aria-current="page">Day by day</a>
+      <a href="/itineraries/{{ it_slug }}/timetable/">Timetable</a>
+    </nav>
+
+    <nav class="itin-day-strip" aria-label="Days in this itinerary">
+      {{ for d of Array.from({ length: days_count }, (_, i) => i + 1) }}
+        <a
+          href="/itineraries/{{ it_slug }}/day-{{ d }}/"
+          class="itin-day-chip{{ if d === day_num }} is-active{{ /if }}"
+          {{ if d === day_num }}aria-current="page"{{ /if }}
+        >{{ d }}</a>
+      {{ /for }}
+    </nav>
+
+    <nav class="itin-day-nav" aria-label="Previous and next day">
+      {{ if prev_day_url }}
+        <a class="itin-nav-link" href="{{ prev_day_url }}">← Previous day</a>
+      {{ else }}
+        <span class="itin-nav-link is-disabled">← Previous day</span>
+      {{ /if }}
+      {{ if next_day_url }}
+        <a class="itin-nav-link" href="{{ next_day_url }}">Next day →</a>
+      {{ else }}
+        <span class="itin-nav-link is-disabled">Next day →</span>
+      {{ /if }}
     </nav>
   </header>
 
-  {{ if (pages?.today?.length) }}
-    <section class="itinerary-list mb-4">
-      {{ for p of pages.today }}
-        <div class="mb-4 border-b border-gray-300 pb-4">
-          <h3 class="md:text-xl font-sans">
-            <a href="{{ page.url }}">{{ p.title }}</a>
-            {{ if p.visit_time }}
-              <span class="text-sm light:text-gray-600 italic">(Allow {{ p.visit_time }})</span>
-            {{ /if }}
-            {{ if p.travel_time }}
-              <span class="text-sm light:text-gray-600 italic">({{ p.travel_time }})</span>
-            {{ /if }}
-          </h3>
-          <div class="copy">
-            <!-- {{ p.lat }} {{ p.lng }} -->
-            {{ set raw = p.content || "" }}
-            {{ set parts2 = raw.split("## Schedule") }}
-            {{ set scheduleMd = parts2.length > 1 ? parts2[1] : "" }}
-            {{ scheduleMd |> md }}
-          </div>
-        </div>
-      {{ /for }}
-    </section>
-  {{ /if }}
+  <div class="itin-day-layout eater-map is-list-mode" data-map-linked data-eater-map data-day-map>
+    <section class="itin-day-list eater-map-list-pane" aria-label="Plan for this day">
+      {{ if day_view?.mode === "timeline" }}
+        {{ if day_view.lodging?.length }}
+          <ol class="itin-stops itin-stops-compact">
+            {{ for p of day_view.lodging }}
+              <li
+                class="itin-stop block-type-stay"
+                {{ if p.has_map }}data-map-stop-id="{{ p.map_stop_id }}"{{ /if }}
+              >
+                <span class="itin-stop-label">{{ p.block_label || "Stay" }}</span>
+                <h2 class="itin-stop-title"><a href="{{ p.url }}">{{ p.title }}</a></h2>
+              </li>
+            {{ /for }}
+          </ol>
+        {{ /if }}
 
+        <header class="day-plan-header">
+          <h2 class="day-plan-title">
+            <a href="{{ day_view.guideUrl }}">{{ day_view.guideTitle }}</a>
+          </h2>
+          {{ if day_view.intro }}
+            <p class="day-plan-intro">{{ day_view.intro }}</p>
+          {{ /if }}
+          <p class="day-plan-meta">
+            {{ if day_view.primary?.visit_time }}<span>Allow {{ day_view.primary.visit_time }}</span>{{ /if }}
+            {{ if day_view.primary?.travel_time }}<span>{{ day_view.primary.travel_time }} travel</span>{{ /if }}
+          </p>
+          <a class="day-plan-guide-link" href="{{ day_view.guideUrl }}">Guide, overview &amp; booking →</a>
+        </header>
+
+        {{ include "templates/stop-schedule.vto" { schedule: day_view.timeline, variant: "day" } }}
+
+        {{ if route_legs?.length }}
+          <ol class="route-legs" aria-label="Travel between stops">
+            {{ for leg of route_legs }}
+              <li class="route-leg">
+                <span class="route-leg-nums">{{ leg.fromNumber }} → {{ leg.toNumber }}</span>
+                <span class="route-leg-label">{{ leg.label }}</span>
+                <span class="route-leg-titles">{{ leg.fromTitle }} to {{ leg.toTitle }}</span>
+              </li>
+            {{ /for }}
+          </ol>
+          <p class="route-legs-note">Distances are straight-line estimates · times assume ~30 km/h local travel</p>
+        {{ /if }}
+
+      {{ else if pages?.today?.length }}
+        <ol class="itin-stops">
+          {{ for p of pages.today }}
+            <li
+              class="itin-stop block-type-{{ p.block_type || 'explore' }}{{ if p.places?.length }} is-collection{{ /if }}{{ if p.options?.length || p.is_flexible }} is-options{{ /if }}"
+              {{ if p.has_map }}data-map-stop-id="{{ p.map_stop_id }}"{{ /if }}
+            >
+              <span class="itin-stop-label">{{ p.block_label || "Explore" }}</span>
+
+              <h2 class="itin-stop-title">
+                <a href="{{ p.url }}">{{ p.title }}</a>
+                {{ if p.schedule?.length }}
+                  <span class="itin-stop-count">{{ p.schedule.length }} slots</span>
+                {{ else if p.places?.length }}
+                  <span class="itin-stop-count">{{ p.places.length }} places</span>
+                {{ /if }}
+                {{ if p.options?.length }}
+                  <span class="itin-stop-count">{{ p.options.length }} options</span>
+                {{ /if }}
+              </h2>
+
+              <p class="itin-stop-meta">
+                {{ if p.visit_time }}<span>Allow {{ p.visit_time }}</span>{{ /if }}
+                {{ if p.travel_time }}<span>{{ p.travel_time }} travel</span>{{ /if }}
+                {{ if p.travel_category }}<span>{{ p.travel_category }}</span>{{ /if }}
+              </p>
+
+              {{ include "templates/stop-schedule.vto" { schedule: p.schedule } }}
+              {{ if !p.schedule?.length }}
+                {{ include "templates/stop-options.vto" { options: p.options } }}
+                {{ include "templates/place-collection.vto" { places: p.places, heading: "Inside this stop", mapStopId: p.map_stop_id } }}
+              {{ /if }}
+
+              {{ set raw = p.content || "" }}
+              {{ set parts2 = raw.split("## Schedule") }}
+              {{ set scheduleMd = (!p.schedule?.length && parts2.length > 1) ? parts2[1] : "" }}
+              {{ if scheduleMd }}
+                <div class="itin-stop-schedule body">
+                  {{ scheduleMd |> md }}
+                </div>
+              {{ /if }}
+            </li>
+
+            {{ if p.route_leg_after }}
+              <li class="route-leg-inline" aria-hidden="true">
+                <span class="route-leg-inline-line"></span>
+                <span class="route-leg-inline-label">{{ p.route_leg_after.label }}</span>
+              </li>
+            {{ /if }}
+          {{ /for }}
+        </ol>
+      {{ else }}
+        <p class="itin-empty">No stops planned for this day yet.</p>
+      {{ /if }}
+    </section>
+
+    <aside class="itin-day-map eater-map-pane" id="day-map" aria-label="Map">
+      <div class="itin-map-head">
+        <h2 class="itin-map-title">Map</h2>
+        {{ if gmaps_url }}
+          <a class="itin-map-export" href="{{ gmaps_url }}" target="_blank" rel="noopener noreferrer" data-gmaps-export>
+            Google Maps
+          </a>
+        {{ /if }}
+      </div>
+      <div id="map" class="itin-map eater-map-canvas" role="img" aria-label="Map of places on this day"></div>
+      <p class="itin-map-note">
+        {{ (pages?.mapPlaces?.length) || 0 }} mapped place{{ if (pages?.mapPlaces?.length || 0) !== 1 }}s{{ /if }}
+        {{ if route_legs?.length }} · {{ route_legs.length }} leg{{ if route_legs.length !== 1 }}s{{ /if }}{{ /if }}
+      </p>
+    </aside>
+
+    <div class="eater-map-toggle" data-eater-view-toggle role="group" aria-label="View">
+      <button type="button" class="eater-map-toggle-btn is-active" data-view="list" aria-pressed="true">List</button>
+      <button type="button" class="eater-map-toggle-btn" data-view="map" aria-pressed="false">Map</button>
+    </div>
+  </div>
+
+  {{ include "templates/trip-dock.vto" {
+    it_slug: it_slug,
+    days_count: days_count,
+    day_num: day_num,
+    itinerary_url: itinerary_url,
+    dockActive: "day",
+    mapAnchor: "#day-map"
+  } }}
 </main>
 
-
-<h2>Map of Quito & Nearby</h2>
-<div id="map" class="h-96 rounded shadow"></div>
-
 <script type="module">
-  import { initMap } from "/js/maps.js";
-  // Prefer the prebuilt array from itineraries.page.js
-  const prebuilt = {{ JSON.stringify((pages && pages.mapPlaces) ? pages.mapPlaces : null) }};
-  const places = prebuilt;
-
-  if (Array.isArray(places) && places.length) {
-    initMap(places);          // maps.js should accept an array of points
+  import { initEaterMapChrome } from "/js/maps.js";
+  const root = document.querySelector("[data-day-map]");
+  const places = {{ JSON.stringify((pages && pages.mapPlaces) ? pages.mapPlaces : []) }};
+  if (root && Array.isArray(places) && places.length) {
+    initEaterMapChrome(root, places, {
+      numbered: true,
+      route: true,
+      numberStay: true,
+      scrollList: true,
+    });
   } else {
     const el = document.getElementById("map");
-    if (el) el.textContent = "No mapped places for this day.";
+    if (el) el.innerHTML = "<p class='itin-map-empty'>No mapped places for this day.</p>";
   }
 </script>

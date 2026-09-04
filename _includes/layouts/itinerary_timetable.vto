@@ -1,0 +1,152 @@
+---
+layout: layouts/base.vto
+bodyClass: body-timetable
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="itin-day-header">
+    <p class="itin-breadcrumb">
+      <a href="/itineraries/">Itineraries</a>
+      <span aria-hidden="true">/</span>
+      {{ if country_url }}
+        <a href="{{ country_url }}">{{ country }}</a>
+        <span aria-hidden="true">/</span>
+      {{ /if }}
+      <a href="{{ itinerary_url }}">{{ itinerary_title }}</a>
+      <span aria-hidden="true">/</span>
+      <span>Timetable</span>
+    </p>
+
+    <h1 class="page-title">{{ itinerary_title }}</h1>
+    <p class="itin-day-subtitle">{{ days_count }}-day calendar · select a stop to inspect it</p>
+
+    <nav class="itin-view-switch" aria-label="Itinerary views">
+      <a href="{{ itinerary_url }}">Overview</a>
+      <a href="/itineraries/{{ itinerary_slug }}/day-1/">Day by day</a>
+      <a href="/itineraries/{{ itinerary_slug }}/timetable/" aria-current="page">Timetable</a>
+    </nav>
+
+    <ul class="timetable-legend" aria-label="Block types">
+      {{ for entry of block_type_legend }}
+        <li>
+          <span class="timetable-legend-swatch block-type-{{ entry.type }}"></span>
+          <span class="timetable-legend-label">{{ entry.label }}</span>
+          <span class="timetable-legend-hint">{{ entry.hint }}</span>
+        </li>
+      {{ /for }}
+    </ul>
+  </header>
+
+  {{ if timetable_days?.length }}
+    <div class="timetable-workspace">
+      <div class="timetable-scroll" tabindex="0" aria-label="Scrollable timetable">
+        <div class="timetable" style="--day-count: {{ timetable_days.length }}">
+          <div class="timetable-corner" aria-hidden="true"></div>
+
+          {{ for day of timetable_days }}
+            <div class="timetable-day-head">
+              <a href="{{ day.url }}">
+                <span class="timetable-day-num">Day {{ day.day }}</span>
+                {{ if day.niceDate }}
+                  <span class="timetable-day-date">{{ day.niceDate }}</span>
+                {{ /if }}
+              </a>
+            </div>
+          {{ /for }}
+
+          <div class="timetable-hours" aria-hidden="true">
+            {{ for h of hour_labels }}
+              <div class="timetable-hour" style="top: {{ h.topPct }}%">{{ h.label }}</div>
+            {{ /for }}
+          </div>
+
+          {{ for day of timetable_days }}
+            <div class="timetable-day-col">
+              <div class="timetable-day-track">
+                {{ if day.blocks.length === 0 }}
+                  <p class="timetable-empty">No stops</p>
+                {{ /if }}
+
+                {{ for block of day.blocks }}
+                  <button
+                    type="button"
+                    class="timetable-block block-type-{{ block.blockType }}{{ if block.isLodging }} is-lodging{{ /if }}{{ if block.isCollection }} is-collection{{ /if }}{{ if block.isOptions }} is-options{{ /if }}{{ if block.isScheduleSlot }} is-schedule-slot{{ /if }}"
+                    style="top: {{ block.topPct }}%; height: {{ block.heightPct }}%"
+                    aria-controls="timetable-detail"
+                    aria-expanded="false"
+                    aria-label="{{ block.startLabel }}: {{ block.title }}{{ if block.parentTitle }} ({{ block.parentTitle }}){{ /if }}{{ if block.optionCount }} ({{ block.optionCount }} options){{ else if block.placeCount }} ({{ block.placeCount }} places){{ /if }}"
+                    data-tt-block
+                    data-tt-id="{{ block.id }}"
+                  >
+                    <span class="timetable-block-time">{{ block.startLabel }}</span>
+                    {{ if block.parentTitle }}
+                      <span class="timetable-block-parent">{{ block.parentTitle }}</span>
+                    {{ /if }}
+                    <span class="timetable-block-title">{{ block.title }}</span>
+                    {{ if block.optionCount }}
+                      <span class="timetable-block-count">{{ block.optionCount }} options</span>
+                    {{ else if block.placeCount }}
+                      <span class="timetable-block-count">{{ block.placeCount }} places</span>
+                    {{ /if }}
+                  </button>
+                {{ /for }}
+              </div>
+            </div>
+          {{ /for }}
+        </div>
+      </div>
+
+      <aside
+        class="timetable-detail"
+        id="timetable-detail"
+        aria-live="polite"
+        data-tt-detail
+      >
+        <div class="timetable-detail-empty" data-tt-empty>
+          <p class="timetable-detail-kicker">Stop details</p>
+          <h2 class="timetable-detail-title">Select a time block</h2>
+          <p class="timetable-detail-copy">
+            The calendar stays put. Click a stop to read the full title, timing, and next actions — without leaving this view.
+          </p>
+        </div>
+
+        <div class="timetable-detail-body" data-tt-body hidden>
+          <div class="timetable-detail-top">
+            <p class="timetable-detail-kicker" data-tt-kicker></p>
+            <button type="button" class="timetable-detail-close" data-tt-close aria-label="Clear selection">
+              Close
+            </button>
+          </div>
+          <h2 class="timetable-detail-title" data-tt-title></h2>
+          <p class="timetable-detail-when" data-tt-when></p>
+          <ul class="timetable-detail-meta" data-tt-meta></ul>
+          <div class="timetable-detail-places" data-tt-places hidden></div>
+          <p class="timetable-detail-copy" data-tt-excerpt></p>
+          <div class="timetable-detail-actions">
+            <a class="button button-primary" data-tt-day-link href="#">Open this day</a>
+            <a class="button button-ghost" data-tt-place-link href="#">Open place page</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <p class="timetable-note">
+      Times are estimated from stop order and visit duration. Use <strong>Open this day</strong> for the full plan and map.
+    </p>
+
+    <script type="application/json" id="timetable-blocks-data">{{ JSON.stringify(timetable_blocks) |> safe }}</script>
+  {{ else }}
+    <p class="itin-empty">No timetable data yet.</p>
+  {{ /if }}
+</main>
+
+{{ include "templates/trip-dock.vto" {
+  it_slug: itinerary_slug,
+  days_count: days_count,
+  day_num: 1,
+  itinerary_url: itinerary_url,
+  dockActive: "timetable",
+  mapAnchor: null
+} }}
+
+<script type="module" src="/js/timetable.js"></script>

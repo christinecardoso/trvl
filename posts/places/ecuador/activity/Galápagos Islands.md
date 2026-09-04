@@ -9,6 +9,7 @@ tags:
   - Nature
   - Wildlife
   - Adventure
+bucket_list: true
 ---
 UNESCO World Heritage archipelago known for unique wildlife.  
 Best explored by cruise or island-hopping.  

@@ -1,0 +1,35 @@
+---
+layout: layouts/base.vto
+bodyClass: body-tag
+---
+
+<main class="{{ it.bodyClass }}">
+  <header class="page-header travel-archive-header">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="travel-archive-intro">
+      Country hubs gather itineraries, base destinations, and experiences in one place.
+    </p>
+  </header>
+
+  <section class="country-archive" aria-label="Countries">
+    {{ if countries?.length }}
+      <ul class="itin-archive-grid">
+        {{ for c of countries }}
+          <li class="itin-card">
+            <a class="itin-card-link" href="/countries/{{ c.slug }}/">
+              <span class="itin-card-eyebrow">Country</span>
+              <h2 class="itin-card-title">{{ c.country }}</h2>
+              <p class="itin-card-meta">
+                <span>{{ c.counts.itineraries }} itinerar{{ if c.counts.itineraries === 1 }}y{{ else }}ies{{ /if }}</span>
+                <span>{{ c.counts.destinations }} destination{{ if c.counts.destinations !== 1 }}s{{ /if }}</span>
+                <span>{{ c.counts.activities }} experiences</span>
+              </p>
+            </a>
+          </li>
+        {{ /for }}
+      </ul>
+    {{ else }}
+      <p class="itin-empty">Add a <code>country</code> field to places and itineraries to build country hubs.</p>
+    {{ /if }}
+  </section>
+</main>

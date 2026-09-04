@@ -26,6 +26,7 @@ related:
   - Ruta de las Cascadas
   - Pailón del Diablo Waterfall
 travel_direction: south
+bucket_list: true
 ---
 (3.5 hrs south)
 

@@ -6,4 +6,5 @@ itinerary_day:
   - "3"
 itinerary_slug: ecuador-itinerary
 order: "4"
+travel_category: Day Trip
 ---

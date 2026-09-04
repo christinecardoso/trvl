@@ -1,140 +1,237 @@
 ---
 layout: layouts/base.vto
-bodyClass: body-post
+bodyClass: body-post body-itinerary-overview
 ---
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+{{ set slug = itinerary_slug }}
+{{ if !slug }}{{ set slug = title |> slugify }}{{ /if }}
+{{ set n = Number(String(days || "").trim()) }}
+{{ if Number.isNaN(n) }}{{ set n = 0 }}{{ /if }}
+
 <main class="{{ it.bodyClass }}">
-  <header class="page-header">
-    <h1 class="page-title">{{ title }}</h1>
+  <header class="page-header itin-overview-header">
+    <p class="itin-breadcrumb">
+      <a href="/itineraries/">Itineraries</a>
+      <span aria-hidden="true">/</span>
+      {{ if country }}
+        {{ set countrySlug = country |> slugify }}
+        <a href="/countries/{{ countrySlug }}/">{{ country }}</a>
+        <span aria-hidden="true">/</span>
+      {{ /if }}
+      <span>{{ title }}</span>
+    </p>
+
+    <div class="itin-day-title-row">
+      <div>
+        <h1 class="page-title">{{ title }}</h1>
+        <p class="itin-overview-meta">
+          {{ if n }}<span>{{ n }} days</span>{{ /if }}
+          {{ if start_date }}
+            <span>Starts {{ start_date |> date("HUMAN_DATE") }}</span>
+          {{ /if }}
+          {{ if country }}
+            <span><a href="/countries/{{ countrySlug }}/">{{ country }}</a></span>
+          {{ /if }}
+        </p>
+      </div>
+      {{ include "templates/trip-share.vto" { gmapsUrl: null } }}
+    </div>
+
+    {{ if n }}
+      <nav class="itin-view-switch" aria-label="Itinerary views">
+        <a href="{{ url }}" aria-current="page">Overview</a>
+        <a href="/itineraries/{{ slug }}/day-1/">Day by day</a>
+        <a href="/itineraries/{{ slug }}/timetable/">Timetable</a>
+      </nav>
+      <p class="itin-overview-cta">
+        <a class="button button-primary" href="/itineraries/{{ slug }}/day-1/">Open day 1</a>
+        <a class="button button-ghost" href="/itineraries/{{ slug }}/timetable/">Open timetable</a>
+      </p>
+    {{ /if }}
   </header>
-  <section class="itinerary-main"> 
 
-    {{ set slug = title |> slugify }}
+  {{ include "templates/post-memberships.vto" { memberships } }}
 
-    <!-- /* Normalize start_date to a pure UTC date (no TZ shifts) */ -->
+  {{ if content }}
+    <section class="itin-overview-notes body">
+      {{ content }}
+    </section>
+  {{ /if }}
+
+  <section class="itinerary-main">
     {{ set hasStart = !!start_date }}
     {{ set baseY = hasStart ? start_date.getUTCFullYear() : null }}
     {{ set baseM = hasStart ? start_date.getUTCMonth() : null }}
     {{ set baseD = hasStart ? start_date.getUTCDate() : null }}
+    {{ set daysList = Array.from({ length: n }, (_, i) => i + 1) }}
 
-<ol class="grid gap-6">
-  {{ set slug = title |> slugify }}
+    {{ set itemsByDay  = search.pages(`itinerary_slug=${slug}`, "itinerary_day")  || [] }}
+    {{ set itemsByDays = search.pages(`itinerary_slug=${slug}`, "itinerary_days") || [] }}
+    {{ set allItems    = itemsByDay.concat(itemsByDays) }}
 
-  {{ set hasStart = !!start_date }}
-  {{ set baseY = hasStart ? start_date.getUTCFullYear() : null }}
-  {{ set baseM = hasStart ? start_date.getUTCMonth() : null }}
-  {{ set baseD = hasStart ? start_date.getUTCDate() : null }}
+    {{ set allItems = allItems.reduce((acc, p) => {
+      const k = (p && p.url) ? p.url : ((p.src && p.src.path) ? p.src.path : null);
+      if (!k) { acc.list.push(p); return acc; }
+      if (!acc.seen[k]) { acc.seen[k] = true; acc.list.push(p); }
+      return acc;
+    }, { seen: {}, list: [] }).list }}
 
-  {{ set n = Number(String(days || "").trim()) }}
-  {{ if Number.isNaN(n) }}{{ set n = 0 }}{{ /if }}
-  {{ set daysList = Array.from({ length: n }, (_, i) => i + 1) }}
+    {{ set getKeys = (pg) => {
+      const out = [];
+      const a = pg.itinerary_days;
+      const b = pg.itinerary_day;
+      if (Array.isArray(a)) a.forEach((x) => out.push(String(x)));
+      else if (typeof a !== "undefined" && a !== null) out.push(String(a));
+      if (typeof b !== "undefined" && b !== null) out.push(String(b));
+      return out;
+    } }}
 
-  {{ set itemsByDay  = search.pages(`itinerary_slug=${slug}`, "itinerary_day")  || [] }}
-  {{ set itemsByDays = search.pages(`itinerary_slug=${slug}`, "itinerary_days") || [] }}
-  {{ set allItems    = itemsByDay.concat(itemsByDays) }}
+    {{ set tripMapPlaces = allItems.reduce((acc, p) => {
+      const plat = Number(p.lat), plng = Number(p.lng);
+      if (Number.isFinite(plat) && Number.isFinite(plng)) {
+        acc.push({
+          id: (p.url || p.title || "stop") + "-main",
+          stopId: p.url || p.title,
+          title: p.title || "",
+          url: p.url || "",
+          lat: plat,
+          lng: plng,
+          markerType: String(p.kind || "").toLowerCase() === "lodging" ? "stay" : "activity",
+          category: p.travel_category || p.kind || "stop",
+        });
+      }
+      const places = Array.isArray(p.places) ? p.places : [];
+      for (const c of places) {
+        const lat = Number(c.lat), lng = Number(c.lng);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+        acc.push({
+          id: (p.url || p.title || "stop") + "-" + (c.name || "place"),
+          stopId: p.url || p.title,
+          title: c.name || p.title || "",
+          url: c.url || p.url || "",
+          lat,
+          lng,
+          markerType: "activity",
+          category: c.type || "place",
+        });
+      }
+      return acc;
+    }, []) }}
 
-
-  {{ set itemsByDay  = search.pages(`itinerary_slug=${slug}`, "itinerary_day")  || [] }}
-  {{ set itemsByDays = search.pages(`itinerary_slug=${slug}`, "itinerary_days") || [] }}
-  {{ set allItems    = itemsByDay.concat(itemsByDays) }}
-
-  <!-- /* De-duplicate by URL (or src.path fallback) */ -->
-  {{ set allItems = allItems.reduce((acc, p) => {
-    const k = (p && p.url) ? p.url : ((p.src && p.src.path) ? p.src.path : null);
-    if (!k) { acc.list.push(p); return acc; }
-    if (!acc.seen[k]) { acc.seen[k] = true; acc.list.push(p); }
-    return acc;
-  }, { seen: {}, list: [] }).list }}
-
-
-
-  {{ set getKeys = (pg) => {
-    const out = [];
-    const a = pg.itinerary_days;
-    const b = pg.itinerary_day;
-    if (Array.isArray(a)) a.forEach((x) => out.push(String(x)));
-    else if (typeof a !== "undefined" && a !== null) out.push(String(a));
-    if (typeof b !== "undefined" && b !== null) out.push(String(b));
-    return out;
-  } }}
-
-  {{ for dayNum of daysList }}
-    {{ set idx = dayNum - 1 }}
-    {{ set thisDate = hasStart ? new Date(Date.UTC(baseY, baseM, baseD + idx)) : null }}
-    {{ set niceDate = thisDate ? thisDate.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }) : "" }}
-
-    <li>
-      <h2 class="text-2xl font-sans">
-        <a href="/itineraries/{{ slug }}/day-{{ dayNum }}/">
-        Day {{ dayNum }}{{ if niceDate }} · {{ niceDate }}{{ /if }}
-        </a>
-      </h2>
-
-      {{ set matches = allItems.filter((p) => {
-        const keys = getKeys(p);
-        if (!keys.length) return false;
-        const onlyNum = (s) => (String(s).match(/\d+/) || [null])[0];
-        return keys.some((k) =>
-          k === String(dayNum) || (onlyNum(k) && onlyNum(k) === String(dayNum))
-        );
-      }) }}
-
-      {{ set sortedMatches = matches.slice().sort((a, b) => {
-        // 1) Lodging first (case-insensitive)
-        const ak = String(a.kind || "").toLowerCase() === "lodging" ? 0 : 1;
-        const bk = String(b.kind || "").toLowerCase() === "lodging" ? 0 : 1;
-        if (ak !== bk) return ak - bk;
-
-        // 2) Then numeric 'order' (coerce strings like "10" to numbers)
-        const aoRaw = Number(a.order);
-        const boRaw = Number(b.order);
-        const ao = isNaN(aoRaw) ? 9999 : aoRaw;
-        const bo = isNaN(boRaw) ? 9999 : boRaw;
-        if (ao !== bo) return ao - bo;
-
-        // 3) Optional: if you also have a time field like "09:30", sort by that
-        // (uncomment if useful)
-        // const at = String(a.time || a.start_time || "").padStart(5, "0");
-        // const bt = String(b.time || b.start_time || "").padStart(5, "0");
-        // if (at && bt && at !== bt) return at.localeCompare(bt);
-
-        // 4) Finally by title
-        return String(a.title || "").localeCompare(String(b.title || ""));
-      }) }}
-
-      {{ if sortedMatches.length === 0 }}
-        <p class="opacity-60">No items for Day {{ dayNum }} yet.</p>
-      {{ /if }}
-
-      {{ for page of sortedMatches }}
-        <div class="mt-2 pb-4 border-b border-zinc-200">
-          {{ if page.kind === "lodging" }}
-            <h3 class="text-xl font-semibold text-blue-900">Stay</h3>
-          {{ /if }}
-
-          <h3 class="md:text-xl font-sans">
-            <a href="{{ page.url }}">{{ page.title }}</a>
-            {{ if page.visit_time }}
-            <span class="text-smlight:text-gray-600 italic">(Allow {{ page.visit_time }})</span>
-            {{ /if }}
-            {{ if page.travel_time }}
-            <span class="text-sm light:text-gray-600 italic">({{ page.travel_time }})</span>
-            {{ /if }}
-          </h3>
-
-          {{ set raw = page.content || "" }}
-          {{ set parts = raw.split("## Schedule") }}
-          {{ set scheduleMd = parts.length > 1 ? parts[1] : "" }}
-          {{ scheduleMd |> md }}
+    {{ if tripMapPlaces.length }}
+      <section class="itin-trip-map" id="trip-map" aria-labelledby="trip-map-title">
+        <div class="itin-map-head">
+          <h2 id="trip-map-title" class="itin-map-title">Trip map</h2>
+          <a
+            class="itin-map-export"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-gmaps-export
+            hidden
+          >Google Maps</a>
         </div>
-      {{ /for }}
-    </li>
-  {{ /for }}
+        <div id="map" class="itin-map itin-trip-map-canvas" role="img" aria-label="Map of all stops in this trip"></div>
+        <p class="itin-map-note">{{ tripMapPlaces.length }} mapped place{{ if tripMapPlaces.length !== 1 }}s{{ /if }} across the trip</p>
+      </section>
+    {{ /if }}
 
-  <div class="hidden text-xs opacity-60">
-    days={{ n }}, allItems={{ allItems.length }}, slug="{{ slug }}"
-  </div>
-</ol>
+    {{ if daysList.length }}
+      <ol class="itin-day-overview">
+        {{ for dayNum of daysList }}
+          {{ set idx = dayNum - 1 }}
+          {{ set thisDate = hasStart ? new Date(Date.UTC(baseY, baseM, baseD + idx)) : null }}
+          {{ set niceDate = thisDate ? thisDate.toLocaleDateString("en-US", { timeZone: "UTC", weekday: "short", month: "short", day: "numeric" }) : "" }}
 
+          {{ set matches = allItems.filter((p) => {
+            const keys = getKeys(p);
+            if (!keys.length) return false;
+            const onlyNum = (s) => (String(s).match(/\d+/) || [null])[0];
+            return keys.some((k) =>
+              k === String(dayNum) || (onlyNum(k) && onlyNum(k) === String(dayNum))
+            );
+          }) }}
+
+          {{ set sortedMatches = matches.slice().sort((a, b) => {
+            const ak = String(a.kind || "").toLowerCase() === "lodging" ? 0 : 1;
+            const bk = String(b.kind || "").toLowerCase() === "lodging" ? 0 : 1;
+            if (ak !== bk) return ak - bk;
+            const aoRaw = Number(a.order);
+            const boRaw = Number(b.order);
+            const ao = isNaN(aoRaw) ? 9999 : aoRaw;
+            const bo = isNaN(boRaw) ? 9999 : boRaw;
+            if (ao !== bo) return ao - bo;
+            return String(a.title || "").localeCompare(String(b.title || ""));
+          }) }}
+
+          <li class="itin-day-block">
+            <h2 class="itin-day-heading">
+              <a href="/itineraries/{{ slug }}/day-{{ dayNum }}/">
+                Day {{ dayNum }}{{ if niceDate }} · {{ niceDate }}{{ /if }}
+              </a>
+              <span class="itin-day-count">{{ sortedMatches.length }} stop{{ if sortedMatches.length !== 1 }}s{{ /if }}</span>
+            </h2>
+
+            {{ if sortedMatches.length === 0 }}
+              <p class="itin-empty">No items for Day {{ dayNum }} yet.</p>
+            {{ else }}
+              <ul class="itin-day-preview">
+                {{ for page of sortedMatches }}
+                  <li>
+                    {{ if page.kind === "lodging" }}
+                      <span class="itin-stop-label">Stay</span>
+                    {{ /if }}
+                    <a href="{{ page.url }}">{{ page.title }}</a>
+                    {{ if page.options?.length }}
+                      <span class="itin-stop-meta-inline">· {{ page.options.length }} options</span>
+                    {{ else if page.places?.length }}
+                      <span class="itin-stop-meta-inline">· {{ page.places.length }} places</span>
+                    {{ /if }}
+                    {{ if page.block_type === "options" }}
+                      <span class="itin-stop-meta-inline block-type-tag options">Pick one</span>
+                    {{ else if page.block_type === "dayplan" }}
+                      <span class="itin-stop-meta-inline block-type-tag dayplan">Day plan</span>
+                    {{ else if page.block_type === "eat" || page.kind === "eats" || page.kind === "eat" }}
+                      <span class="itin-stop-meta-inline block-type-tag eat">Eat</span>
+                    {{ else if page.places?.length }}
+                      <span class="itin-stop-meta-inline block-type-tag explore">Explore</span>
+                    {{ else if page.kind !== "lodging" }}
+                      <span class="itin-stop-meta-inline block-type-tag explore">Explore</span>
+                    {{ /if }}
+                    {{ if page.visit_time }}
+                      <span class="itin-stop-meta-inline">· {{ page.visit_time }}</span>
+                    {{ /if }}
+                  </li>
+                {{ /for }}
+              </ul>
+              <p class="itin-day-open">
+                <a href="/itineraries/{{ slug }}/day-{{ dayNum }}/">Open day {{ dayNum }} map →</a>
+              </p>
+            {{ /if }}
+          </li>
+        {{ /for }}
+      </ol>
+    {{ /if }}
   </section>
+
+  {{ include "templates/trip-dock.vto" {
+    it_slug: slug,
+    days_count: n,
+    day_num: 1,
+    itinerary_url: url,
+    dockActive: "overview",
+    mapAnchor: tripMapPlaces.length ? "#trip-map" : null
+  } }}
 </main>
+
+{{ if tripMapPlaces?.length }}
+<script type="module">
+  import { initMap } from "/js/maps.js";
+  const places = {{ JSON.stringify(tripMapPlaces) }};
+  if (Array.isArray(places) && places.length) {
+    initMap(places, { numbered: true, route: false, linkList: false });
+  }
+</script>
+{{ /if }}

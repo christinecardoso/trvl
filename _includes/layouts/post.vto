@@ -9,9 +9,42 @@ bodyClass: body-post
       <h1 class="post-title">{{ title }}</h1>
 
       {{ include "templates/post-details.vto" }}
+
+      {{ include "templates/post-memberships.vto" { memberships } }}
+
+      {{ if visit_time || travel_time || travel_category || (!is_itinerary_day_plan && schedule?.length) || places?.length || options?.length }}
+        <p class="itin-stop-meta">
+          {{ if !is_itinerary_day_plan && schedule?.length }}<span>{{ schedule.length }} timed slots</span>{{ /if }}
+          {{ if options?.length }}<span>{{ options.length }} options</span>{{ /if }}
+          {{ if places?.length }}<span>{{ places.length }} places</span>{{ /if }}
+          {{ if visit_time }}<span>Allow {{ visit_time }}</span>{{ /if }}
+          {{ if travel_time }}<span>{{ travel_time }} travel</span>{{ /if }}
+          {{ if travel_category }}<span>{{ travel_category }}</span>{{ /if }}
+        </p>
+      {{ /if }}
     </header>
-<p>kind = {{ kind }}</p>
-<p>slug = {{ slug }}</p>
+
+    {{# Day-plan guides still list Pick one — the itinerary day page owns the timed map #}}
+    {{ if options?.length && (is_itinerary_day_plan || !schedule?.length) }}
+      {{ include "templates/stop-options.vto" { options, heading: "Pick one" } }}
+    {{ /if }}
+
+    {{ if is_itinerary_day_plan }}
+      {{ include "templates/day-plan-cta.vto" }}
+    {{ /if }}
+
+    {{ if !is_itinerary_day_plan }}
+      {{ include "templates/stop-schedule.vto" { schedule, heading: "Day plan" } }}
+    {{ /if }}
+    {{ include "templates/stop-weekly.vto" { weekly } }}
+    {{ if is_itinerary_day_plan && places?.length }}
+      {{ include "templates/place-collection.vto" { places, heading: "Places on this day" } }}
+    {{ /if }}
+    {{ if !is_itinerary_day_plan }}
+      {{ if places?.length && (!schedule?.length || visit_style === "Circuit") }}
+        {{ include "templates/place-collection.vto" { places, heading: "Places in this stop" } }}
+      {{ /if }}
+    {{ /if }}
 
     {{ if toc.length }}
     <nav class="toc">
@@ -36,8 +69,14 @@ bodyClass: body-post
     </nav>
     {{ /if }}
 
+    {{ set raw = content || "" }}
+    {{ set afterMore = raw.split(/<!--\s*more\s*-->/i) }}
+    {{ set mainRaw = afterMore.length > 1 ? afterMore[1] : raw }}
+    {{ set scheduleParts = mainRaw.split("## Schedule") }}
+    {{ set mainRaw = scheduleParts[0] }}
+
     <div class="post-body body">
-      {{ content }}
+      {{ mainRaw |> md }}
     </div>
 
     {{ if it.footnotes.length }}
