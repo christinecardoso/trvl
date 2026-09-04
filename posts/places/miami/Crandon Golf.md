@@ -14,7 +14,7 @@ weekly:
   - days: [sat]
     time: "~7:30–11:30 AM"
     title: "Tee time — 18-hole championship"
-    notes: "Par-72 public — mangroves, lagoons, Biscayne Bay. Former PGA Tour Champions host (18 years). Book ahead"
+    notes: "Par-72 public — mangroves, lagoons, Biscayne Bay. Former PGA Tour Champions host (18 years). Book: GolfNow"
 ---
 **First-choice Miami golf** — feels like an outing, not a generic Florida round.
 
@@ -24,9 +24,12 @@ weekly:
 
 ### Best Saturday build
 
-**7:30–11:30** Crandon → **12:00** lunch/drinks Key Biscayne → **1:30–2:00** head toward boat → afternoon pickup → tow north.
+Morning round → Key Biscayne lunch/drinks → afternoon free (Deuce / Andrew from ~4) → **boat most likely after 5 PM**.
 
-Or: early golf → Key Biscayne beach/drive → lunch → boat.
+### Book
+
+[Crandon Golf at Key Biscayne on GolfNow](https://www.golfnow.com/courses/1028499-crandon-golf-at-key-biscayne-details#)
 
 - **Area:** Key Biscayne
 - **Vibe:** Scenic championship — Miami experience, not generic Florida
+- **Tee times:** [GolfNow](https://www.golfnow.com/courses/1028499-crandon-golf-at-key-biscayne-details#)

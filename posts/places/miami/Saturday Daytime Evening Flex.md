@@ -62,7 +62,7 @@ schedule:
     block_type: options
     options:
       - title: Crandon Golf — Key Biscayne
-        notes: "⭐ Championship · mangroves/Bay · tropical Miami golf"
+        notes: "⭐ Championship · mangroves/Bay · [book GolfNow](https://www.golfnow.com/courses/1028499-crandon-golf-at-key-biscayne-details#)"
       - title: KYU Wynwood
         notes: "$40 Spice brunch — crab Benedict, KFC, bao, s'mores"
       - title: Kojin 2.0
@@ -89,17 +89,17 @@ schedule:
       - title: Urban Film Festival
         notes: "Rain / indoor flex"
   - time: "5:00 PM – 8:00 PM"
-    title: "Boat pickup window"
-    notes: "Most likely after 5 PM Saturday — still need exact location + time"
+    title: "Boat pickup — most likely after 5 PM"
+    notes: "Likely window Saturday evening — still need exact location + time. Afternoon plans (Deuce/Andrew) should wrap before this."
   - time: "6:00 PM – 10:00 PM"
     title: "Viva Brazil @ Miami Beach Bandshell — if still free"
-    notes: "Only if pickup is early enough in the after-5 window or you're staying in Miami after the boat · otherwise skip"
+    notes: "Only if you're still in Miami after boat · otherwise skip"
     options:
       - title: Viva Brazil @ Miami Beach Bandshell
         notes: "~6 PM onward · North Beach Bandshell"
 ---
-**Boat most likely after 5 PM Saturday** — morning + afternoon are open; lock location + exact time still.
+**Boat pickup most likely after 5 PM Saturday** — morning + afternoon are open until then; still need exact **location**.
 
 <!--more-->
 
-**Circle first:** Crandon or brunch (**KYU** / **Kojin** / **Level 6** / **Schnebly** if south) · **Deuce** or **Andrew** from ~4 · boat after 5 · **Viva Brazil** if still in town.
+**Circle first:** Crandon or brunch (**KYU** / **Kojin** / **Level 6** / **Schnebly** if south) · **Deuce** or **Andrew** from ~4 · **boat after 5** · **Viva Brazil** if still in town.

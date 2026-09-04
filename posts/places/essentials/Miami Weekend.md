@@ -32,5 +32,5 @@ tags:
 | --- | --- |
 | **8:00 AM–12:00 PM** | Morning — **Crandon** ⭐ / brunch: **KYU** · **Kojin 2.0** (Sat only) · **Level 6** ⭐ / **Deering** |
 | **12:00–5:00 PM** | Afternoon — **Schnebly** 🌴 12–3 (if boat south) · **Deuce 100th** / **Andrew** from ~4 |
-| **5:00 PM+** | **Boat pickup** (most likely after 5 — still need location) |
+| **5:00–8:00 PM** | **Boat pickup — most likely after 5 PM** (still need location) |
 | **6:00–10:00 PM** | **Viva Brazil @ Bandshell** ⭐ — only if still in Miami after boat |

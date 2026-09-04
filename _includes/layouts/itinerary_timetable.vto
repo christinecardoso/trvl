@@ -88,6 +88,7 @@ bodyClass: body-timetable
                     {{ else if block.placeCount }}
                       <span class="timetable-block-count">{{ block.placeCount }} places</span>
                     {{ /if }}
+                    <span class="timetable-block-action" aria-hidden="true">View</span>
                   </button>
                 {{ /for }}
               </div>
@@ -104,9 +105,9 @@ bodyClass: body-timetable
       >
         <div class="timetable-detail-empty" data-tt-empty>
           <p class="timetable-detail-kicker">Stop details</p>
-          <h2 class="timetable-detail-title">Select a time block</h2>
+          <h2 class="timetable-detail-title">Click a time block</h2>
           <p class="timetable-detail-copy">
-            The calendar stays put. Click a stop to read the full title, timing, and next actions — without leaving this view.
+            Hover any colored stop on the calendar, then click it to inspect timing, options, and next actions — without leaving this view.
           </p>
         </div>
 
